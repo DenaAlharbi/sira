@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function QuestionStep({ form, updateForm, onNext }) {
+export default function QuestionStep({ form, updateForm, onNext, onExit }) {
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
@@ -93,19 +93,35 @@ export default function QuestionStep({ form, updateForm, onNext }) {
         </motion.div>
       </AnimatePresence>
 
-      <div className="flex items-center justify-between pt-10">
-        <button 
-          onClick={prevChild}
-          className={`text-xs font-bold uppercase tracking-widest ${currentStep === 0 ? 'opacity-0 pointer-events-none' : 'text-slate-400 hover:text-slate-900'}`}
-        >
-          Back
-        </button>
+      <div className="flex items-center justify-between pt-10 border-t border-slate-50">
+        <div className="flex gap-6">
+          {/* Back Button */}
+          <button 
+            type="button"
+            onClick={prevChild}
+            className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${
+              currentStep === 0 ? 'opacity-0 pointer-events-none' : 'text-slate-400 hover:text-slate-900'
+            }`}
+          >
+            Back
+          </button>
+          
+          {/* Exit Button - Now explicitly uses onExit */}
+          <button 
+            type="button"
+            onClick={onExit} 
+            className="text-[10px] font-bold uppercase tracking-widest text-slate-300 hover:text-red-500 transition-colors"
+          >
+            Cancel & Exit
+          </button>
+        </div>
         
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+          <span className="hidden md:block text-[10px] text-slate-300 font-bold uppercase tracking-widest">
             Press Enter ↵
           </span>
           <button 
+            type="button"
             onClick={nextChild}
             className="bg-slate-900 text-white px-8 py-3 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-sira-purple transition-all shadow-lg active:scale-95"
           >

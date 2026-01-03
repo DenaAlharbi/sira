@@ -1,86 +1,83 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 
 export default function Preview({ form, onBack, onNext }) {
-  // Create a temporary URL for the uploaded image so the user can see themselves
-  const imageUrl = useMemo(() => {
-    return form.image ? URL.createObjectURL(form.image) : null;
-  }, [form.image]);
+  const [device, setDevice] = useState('desktop'); // 'desktop' or 'mobile'
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      {/* We use two distinct "Cards" here to show the user how their 
-          content adapts to different premium "sections".
-      */}
-      <div className="grid md:grid-cols-2 gap-8">
-        
-        {/* CARD 1: Modern Professional Card */}
-        <section className="group">
-          <p className="text-xs uppercase tracking-widest text-gray-400 mb-2 ml-1">Modern Display</p>
-          <div className="border border-gray-100 rounded-sm p-8 bg-white shadow-xl shadow-gray-100/50 transition-all">
-            <div className="flex flex-col items-center text-center gap-6">
-              {imageUrl ? (
-                <img src={imageUrl} className="w-24 h-24 rounded-full object-cover border-2 border-sira-lavender p-1" alt="Profile" />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#4C1D95] to-[#FB923C] opacity-80" />
-              )}
-              
-              <div>
-                <h3 className="text-2xl font-heading text-sira-purple mb-1">
-                  {form.fullName || 'Abdullah Ahmed'}
-                </h3>
-                <p className="text-sm tracking-widest uppercase text-sira-orange font-medium">
-                  {form.title || 'Senior Executive'}
-                </p>
-              </div>
+    <div className="flex flex-col lg:flex-row gap-12 items-start">
+      
+      {/* LEFT: Live Customization Panel */}
+      <aside className="w-full lg:w-1/3 space-y-8 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+        <div>
+          <h3 className="text-2xl font-heading text-slate-900 mb-2">Final Review</h3>
+          <p className="text-slate-400 text-xs uppercase tracking-widest">Verify your digital architectural data</p>
+        </div>
 
-              <p className="text-gray-600 leading-relaxed text-sm italic max-w-sm">
-                "{form.bio || 'Your professional story will be elegantly displayed here...'}"
-              </p>
-            </div>
+        <div className="space-y-6">
+          <div className="pb-4 border-b border-slate-50">
+            <span className="text-[10px] text-slate-300 uppercase font-bold tracking-widest block mb-1">Full Name</span>
+            <p className="font-medium text-slate-900">{form.fullName || 'Not provided'}</p>
           </div>
-        </section>
-
-        {/* CARD 2: Classic Saudi Heritage Style */}
-        <section className="group">
-          <p className="text-xs uppercase tracking-widest text-gray-400 mb-2 ml-1">Classic Premium</p>
-          <div className="border-t-4 border-sira-purple rounded-sm p-8 bg-[#FDFCFB] shadow-xl shadow-gray-100/50 h-full">
-            <div className="text-right" dir="rtl">
-              <h3 className="text-3xl font-semibold mb-2" style={{ fontFamily: '"Amiri", serif' }}>
-                {form.fullName || 'الاسم الكامل'}
-              </h3>
-              <div className="h-px w-20 bg-sira-orange mb-4 mr-0" />
-              <p className="text-lg text-gray-700 mb-6" style={{ fontFamily: '"Noto Sans Arabic", sans-serif' }}>
-                {form.title || 'المسمى الوظيفي'}
-              </p>
-            </div>
-            
-            <div className="mt-12 pt-6 border-l-2 border-gray-100 pl-6">
-              <p className="text-sm text-gray-500 uppercase tracking-tighter mb-2">Portfolio Status</p>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-xs font-medium text-gray-800">Ready for Global Deployment</span>
-              </div>
-            </div>
+          <div className="pb-4 border-b border-slate-50">
+            <span className="text-[10px] text-slate-300 uppercase font-bold tracking-widest block mb-1">Expertise</span>
+            <p className="font-medium text-slate-900">{form.title || 'Not provided'}</p>
           </div>
-        </section>
-      </div>
+          <div className="pb-4">
+            <span className="text-[10px] text-slate-300 uppercase font-bold tracking-widest block mb-1">Biography</span>
+            <p className="text-sm text-slate-500 leading-relaxed italic line-clamp-3">"{form.bio || 'Waiting for narrative...'}"</p>
+          </div>
+        </div>
 
-      {/* Action Buttons (The Pay/Deploy section) */}
-      <div className="flex flex-col items-center gap-4 pt-8 border-t border-gray-100">
-        <p className="text-sm text-gray-400">Everything looks perfect? Proceed to secure your custom domain.</p>
-        <div className="flex gap-4">
+        <div className="pt-4 flex flex-col gap-3">
           <button 
-            className="px-8 py-3 rounded-sm border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-all" 
+            onClick={onNext}
+            className="w-full py-4 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-sira-purple transition-all shadow-xl"
+          >
+            Confirm & Deploy
+          </button>
+          <button 
             onClick={onBack}
+            className="w-full py-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-slate-900 transition-colors"
           >
             Edit Details
           </button>
-          <button 
-            className="px-10 py-3 rounded-sm bg-sira-purple text-white text-sm font-semibold hover:bg-[#3b1675] hover:shadow-lg hover:shadow-purple-200 transition-all transform hover:-translate-y-1" 
-            onClick={onNext}
-          >
-            Deploy & Pay 299 SAR
-          </button>
+        </div>
+      </aside>
+
+      {/* RIGHT: High-End Live Preview Display */}
+      <div className="w-full lg:w-2/3">
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-slate-400 italic">Viewport Rendering</h4>
+          <div className="flex bg-slate-100 p-1 rounded-lg">
+            <button 
+              onClick={() => setDevice('desktop')}
+              className={`px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest rounded-md transition-all ${device === 'desktop' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400'}`}
+            >
+              Desktop
+            </button>
+            <button 
+              onClick={() => setDevice('mobile')}
+              className={`px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest rounded-md transition-all ${device === 'mobile' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400'}`}
+            >
+              Mobile
+            </button>
+          </div>
+        </div>
+
+        {/* The "Device Frame" */}
+        <div className={`mx-auto transition-all duration-700 bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] rounded-2xl overflow-hidden border-8 border-slate-900 ${device === 'desktop' ? 'w-full aspect-video' : 'w-[320px] h-[600px]'}`}>
+          <div className="w-full h-full overflow-y-auto p-12 bg-[#FDFCFB] text-center font-heading">
+             {/* This simulates their actual chosen template layout */}
+             <div className="mt-20">
+               <span className="text-sira-orange text-[10px] tracking-[0.4em] uppercase font-bold">Preview Mode</span>
+               <h1 className="text-5xl mt-4 mb-2">{form.fullName || 'Abdullah Ahmed'}</h1>
+               <div className="h-px w-24 bg-sira-purple mx-auto mb-6 opacity-30"></div>
+               <p className="font-arabic text-2xl text-slate-700">{form.title || 'Professional Title'}</p>
+               <p className="mt-12 text-sm text-slate-400 max-w-sm mx-auto leading-relaxed italic">
+                 {form.bio || 'Your biography will appear here in a premium typographic layout.'}
+               </p>
+             </div>
+          </div>
         </div>
       </div>
     </div>
