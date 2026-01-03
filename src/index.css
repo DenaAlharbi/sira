@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Arabic:wght@300;400;600&display=swap');
+
+@theme {
+  --font-heading: "Playfair Display", serif;
+  --font-arabic: "Amiri", serif;
+  --color-sira-purple: #4C1D95;
+  --color-sira-orange: #FB923C;
+}
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+}
+
+body {
+  background: var(--bg-gradient);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #1e1b4b; /* Deep indigo text instead of pure black */
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
