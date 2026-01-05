@@ -274,7 +274,8 @@ function EditorApp() {
               <div className="mb-16 text-center">
                 <h2 className="text-4xl md:text-5xl font-heading text-slate-900 mb-4 tracking-tight">Premium Templates</h2>
                 <p className="text-slate-500 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
-                  Select a high-end architectural layout for your professional digital presence.
+                  Select a high-end architectural layout for your professional digital presence. 
+                  Designed for the Kingdom's next generation of leaders.
                 </p>
               </div>
               <Gallery onSelect={(id) => { setSelectedTemplate(id); setView('questions'); }} />
@@ -286,7 +287,7 @@ function EditorApp() {
                <h2 className="text-3xl font-heading mb-6 italic text-slate-900">Ownership & Licensing</h2>
                <p className="mb-8 text-slate-500 max-w-lg mx-auto leading-relaxed">A singular investment in your digital architecture. Permanent hosting, professional domain, and lifetime updates.</p>
                <button onClick={() => setView('gallery')} className="text-[10px] font-bold uppercase tracking-[0.2em] bg-slate-900 text-white px-8 py-4 rounded-full hover:bg-sira-purple transition-all shadow-xl">
-                 Explore the Collection
+                 Explore the Portfolios
                </button>
             </motion.div>
           )}
@@ -326,8 +327,45 @@ function EditorApp() {
         </AnimatePresence>
       </main>
       
-      <footer className="mt-20 border-t border-slate-100 pt-16 pb-12 px-6 text-center text-[10px] text-slate-300 uppercase tracking-[0.3em] font-bold">
-        © 2026 Sira Premium Systems
+       {/* FOOTER */}
+      <footer className="mt-20 border-t border-slate-100 pt-16 pb-12 px-6">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+          
+          <div className="space-y-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-heading text-slate-900 font-bold tracking-tight">Sira</span>
+              <span className="text-lg font-arabic text-slate-900/40">سيرة</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed max-w-xs uppercase tracking-widest">
+              Architecting professional digital identities for the Kingdom's next generation of leaders.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Support & Contact</h4>
+            <div className="flex flex-col gap-2">
+              <a href="mailto:support@sira.app" className="text-sm text-slate-500 hover:text-sira-purple transition-colors">support@sira.app</a>
+              <p className="text-sm text-slate-500">Dhahran, Eastern Province, KSA</p>
+            </div>
+          </div>
+
+          <div className="space-y-4 md:text-right">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Credits</h4>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Designed & Developed by <span className="text-slate-900 font-medium">Dena Alharbi</span>
+            </p>
+            <div className="flex md:justify-end gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-300">
+              <a href="#" className="hover:text-slate-900">Privacy</a>
+              <a href="#" className="hover:text-slate-900">Terms</a>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-16 text-center">
+          <span className="font-heading italic text-sm tracking-[0.3em] text-slate-200 uppercase">
+            © 2026 Sira Premium Systems
+          </span>
+        </div>
       </footer>
     </div>
   );
