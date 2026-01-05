@@ -5,15 +5,27 @@ import { supabase } from '../supabaseClient';
 export default function AuthModal({ isOpen, onClose }) {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  
+  // LOG THIS to see if the button is actually being clicked
+  console.log("Attempting login for:", email);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin }
-    });
-    if (!error) setSent(true);
-  };
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      // This ensures Supabase sends you back to the exact site you are on
+      emailRedirectTo: window.location.origin, 
+    }
+  });
+
+  if (error) {
+    console.error("Auth Error:", error.message);
+    alert("Error: " + error.message); // This will tell you if you're rate-limited
+  } else {
+    setSent(true);
+  }
+};
 
   if (!isOpen) return null;
 
