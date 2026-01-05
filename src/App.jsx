@@ -179,7 +179,9 @@ function EditorApp() {
         setSelectedTemplate(savedTemplate);
 
         const finalizeDeployment = async () => {
-          const safeUsername = (parsedForm.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
+          // AUTO-DEPLOY FOR PAID USERS (Unique Username Logic Applied Here Too)
+          const baseName = (parsedForm.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-');
+          const safeUsername = `${baseName}-${Date.now()}`;
           setDeployedUsername(safeUsername);
 
           try {
@@ -229,7 +231,11 @@ function EditorApp() {
 
   // --- CORE DEPLOYMENT FUNCTION ---
   const handleDeployToSupabase = async (ownerEmail) => {
-    const safeUsername = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
+    // FIX 2: ROBUST UNIQUE USERNAME
+    // Uses Date.now() to ensure no duplicate usernames cause errors
+    const baseName = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const safeUsername = `${baseName}-${Date.now()}`;
+    
     setDeployedUsername(safeUsername);
 
     try {
@@ -295,7 +301,7 @@ function EditorApp() {
     if (isEditMode) localStorage.setItem('sira_edit_mode', 'true');
     if (existingId) localStorage.setItem('sira_existing_id', existingId);
     
-    // --- THE FIX: USE THE RULEBOOK ---
+    // --- FIX 3: USE THE RULEBOOK ---
     // Instead of checking "is it BasicFree?", we check "Is it in the list?"
     const isFree = FREE_TEMPLATES.includes(selectedTemplate);
 
@@ -386,11 +392,14 @@ function EditorApp() {
         onClose={() => setIsDeploying(false)} 
       />
       
+      {/* MOBILE FIX: Less top padding on mobile (pt-24) */}
       <main className="pt-24 md:pt-32 pb-12 md:pb-20 px-4 md:px-6 max-w-[1400px] mx-auto">
         <AnimatePresence mode="wait">
           
           {view === 'gallery' && (
             <motion.div key="gallery" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+              
+              {/* MOBILE FIX: Smaller text/spacing for mobile header */}
               <div className="mb-8 md:mb-16 text-center">
                 <h2 className="text-3xl md:text-5xl font-heading text-slate-900 mb-3 md:mb-4 tracking-tight">
                   Premium Templates
@@ -420,6 +429,7 @@ function EditorApp() {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
+              // MOBILE FIX: z-[200] ensures it sits ABOVE the header
               className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" 
               onClick={handleHomeClick}
             >
@@ -428,8 +438,8 @@ function EditorApp() {
                 animate={{ scale: 1, opacity: 1, y: 0 }} 
                 onClick={(e) => e.stopPropagation()} 
                 // MOBILE FIXES: 
-                // max-h-[85vh] prevents overlap with header
-                // overflow-hidden flex flex-col ensures scrolling happens INSIDE the box
+                // 1. max-h-[85vh]: Prevents overlap with edges vertically
+                // 2. overflow-hidden flex flex-col: Scrolling happens INSIDE the box
                 className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh] md:h-auto"
               >
                 <button onClick={handleHomeClick} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10">✕</button>
