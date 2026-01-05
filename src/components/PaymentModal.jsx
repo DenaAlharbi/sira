@@ -21,7 +21,8 @@ export default function PaymentModal({ isOpen, onClose, amount, onPaymentSuccess
             description: 'Sira Portfolio License',
             
           // FIXED: This will now use https://sira-three.vercel.app when live
-  callback_url: window.location.origin,
+// Inside Moyasar.init
+callback_url: window.location.origin, // This automatically uses https://sira-three.vercel.app
             // 2. FIX: Remove 'applepay' & 'stcpay' for localhost testing
             // Apple Pay requires a verified HTTPS domain, so we test with Cards only.
             methods: ['creditcard'], 

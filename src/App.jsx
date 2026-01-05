@@ -10,8 +10,8 @@ import QuestionStep from './components/QuestionStep';
 import Preview from './components/Preview';
 import OnboardingModal from './components/OnboardingModal';
 import PaymentModal from './components/PaymentModal';
-import DeploymentModal from '../DeploymentModal';
-
+// Change this line in src/App.jsx
+import DeploymentModal from './components/DeploymentModal';
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
 
