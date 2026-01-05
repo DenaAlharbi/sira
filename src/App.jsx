@@ -18,6 +18,14 @@ import DashboardModal from './components/DashboardModal';
 import BasicFree from './templates/BasicFree/Index'; 
 
 // =======================================================
+// CONFIGURATION (THE RULEBOOK)
+// =======================================================
+// This list is the "Source of Truth".
+// If a template ID is here, it skips payment. 
+// If it's NOT here, the app forces payment.
+const FREE_TEMPLATES = ['BasicFree']; 
+
+// =======================================================
 // NEW: CLAIM MODAL (Email Only - No Credit Card)
 // =======================================================
 function ClaimModal({ isOpen, onClose, onClaim }) {
@@ -39,7 +47,7 @@ function ClaimModal({ isOpen, onClose, onClaim }) {
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }} 
         animate={{ scale: 1, opacity: 1 }} 
-        className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl relative"
+        className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl relative"
       >
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-300 hover:text-slate-900">✕</button>
         
@@ -120,8 +128,6 @@ function EditorApp() {
   const [isDeploying, setIsDeploying] = useState(false); 
   const [isAuthOpen, setIsAuthOpen] = useState(false); 
   const [isDashboardOpen, setIsDashboardOpen] = useState(false); 
-  
-  // NEW: Claim Modal State
   const [isClaimOpen, setIsClaimOpen] = useState(false);
 
   // EDIT MODE STATE
@@ -139,7 +145,24 @@ function EditorApp() {
     contact: []
   });
 
-  // --- 1. SESSION RECOVERY ---
+  // --- 1. CLEANUP ON LOAD (THE FIX FOR YOUR FRIEND) ---
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get('status');
+
+    // If we are NOT coming back from a payment, WIPE OLD MEMORY.
+    // This stops the browser from remembering an old "Paid" selection.
+    if (paymentStatus !== 'paid') {
+       localStorage.removeItem('sira_form_backup');
+       localStorage.removeItem('sira_template_backup');
+       localStorage.removeItem('sira_edit_mode');
+       localStorage.removeItem('sira_existing_id');
+       // Force reset to the Free template by default
+       setSelectedTemplate('BasicFree'); 
+    }
+  }, []);
+
+  // --- 2. SESSION RECOVERY (Only if paid) ---
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paymentStatus = params.get('status');
@@ -161,9 +184,8 @@ function EditorApp() {
 
           try {
             let error;
-            
             if (savedEditMode && savedId) {
-               // UPDATE LOGIC
+               // UPDATE
                const result = await supabase
                 .from('profiles')
                 .update({ 
@@ -173,7 +195,7 @@ function EditorApp() {
                 .eq('id', savedId);
                error = result.error;
             } else {
-               // INSERT LOGIC
+               // INSERT
                const result = await supabase
                 .from('profiles')
                 .insert([{ 
@@ -187,10 +209,8 @@ function EditorApp() {
             }
             
             if (error) throw error;
-            
             setIsDeploying(true); 
             
-            // Clean up
             window.history.replaceState({}, document.title, "/");
             localStorage.removeItem('sira_form_backup');
             localStorage.removeItem('sira_template_backup');
@@ -258,45 +278,48 @@ function EditorApp() {
     setIsEditMode(false); 
     setExistingId(null); 
     setForm({ fullName: '', title: '', bio: '', experience: [], contact: [] }); 
+    
+    // RESET TO FREE (Safety Measure)
+    setSelectedTemplate('BasicFree');
+    
+    // CLEAR MEMORY
+    localStorage.removeItem('sira_form_backup');
+    localStorage.removeItem('sira_template_backup');
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // --- SMART CHECKOUT HANDLER ---
   const handleCheckoutStart = async () => {
-    // Backup data
     localStorage.setItem('sira_form_backup', JSON.stringify(form));
     localStorage.setItem('sira_template_backup', selectedTemplate);
     if (isEditMode) localStorage.setItem('sira_edit_mode', 'true');
     if (existingId) localStorage.setItem('sira_existing_id', existingId);
     
-    // 1. FREE TEMPLATE LOGIC
-    if (selectedTemplate === 'BasicFree') {
+    // --- THE FIX: USE THE RULEBOOK ---
+    // Instead of checking "is it BasicFree?", we check "Is it in the list?"
+    const isFree = FREE_TEMPLATES.includes(selectedTemplate);
+
+    if (isFree) {
+       // It's Free -> Go to Claim Modal
        const { data: { user } } = await supabase.auth.getUser();
-       
        if (user) {
-         // If already logged in, deploy immediately
          await handleDeployToSupabase(user.email);
        } else {
-         // If NOT logged in, open the simple Claim Modal (Email Only)
          setIsClaimOpen(true);
        }
     } 
-    // 2. PAID TEMPLATE LOGIC
     else {
+       // It's Paid -> Go to Payment
        setIsPaymentOpen(true);
     }
   };
 
-  // --- CLAIM SUBMIT (Free Flow) ---
   const handleClaimSubmit = async (email) => {
     setIsClaimOpen(false);
-    // 1. Create the portfolio record immediately
     await handleDeployToSupabase(email);
-    // 2. Send Magic Link for future editing
     await supabase.auth.signInWithOtp({ email });
   };
 
-  // --- PAYMENT SUCCESS (Paid Flow) ---
   const handlePaymentSuccess = async (paymentResult) => {
     setIsPaymentOpen(false);
     if (paymentResult.owner_email) {
@@ -341,7 +364,6 @@ function EditorApp() {
           />
         )}
 
-        {/* NEW: CLAIM MODAL */}
         {isClaimOpen && (
           <ClaimModal 
             isOpen={isClaimOpen} 
@@ -364,14 +386,16 @@ function EditorApp() {
         onClose={() => setIsDeploying(false)} 
       />
       
-      <main className="pt-32 pb-20 px-6 max-w-[1400px] mx-auto">
+      <main className="pt-24 md:pt-32 pb-12 md:pb-20 px-4 md:px-6 max-w-[1400px] mx-auto">
         <AnimatePresence mode="wait">
           
           {view === 'gallery' && (
             <motion.div key="gallery" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-              <div className="mb-16 text-center">
-                <h2 className="text-4xl md:text-5xl font-heading text-slate-900 mb-4 tracking-tight">Premium Templates</h2>
-                <p className="text-slate-500 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+              <div className="mb-8 md:mb-16 text-center">
+                <h2 className="text-3xl md:text-5xl font-heading text-slate-900 mb-3 md:mb-4 tracking-tight">
+                  Premium Templates
+                </h2>
+                <p className="text-slate-500 max-w-sm md:max-w-xl mx-auto text-xs md:text-base leading-relaxed">
                   Select a high-end architectural layout for your professional digital presence. 
                   Designed for the Kingdom's next generation of leaders.
                 </p>
@@ -381,9 +405,9 @@ function EditorApp() {
           )}
 
           {view === 'pricing' && (
-            <motion.div key="pricing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-5xl mx-auto text-center py-20">
-               <h2 className="text-3xl font-heading mb-6 italic text-slate-900">Ownership & Licensing</h2>
-               <p className="mb-8 text-slate-500 max-w-lg mx-auto leading-relaxed">A singular investment in your digital architecture. Permanent hosting, professional domain, and lifetime updates.</p>
+            <motion.div key="pricing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-5xl mx-auto text-center py-12 md:py-20">
+               <h2 className="text-2xl md:text-3xl font-heading mb-6 italic text-slate-900">Ownership & Licensing</h2>
+               <p className="mb-8 text-slate-500 max-w-lg mx-auto leading-relaxed text-sm md:text-base">A singular investment in your digital architecture. Permanent hosting, professional domain, and lifetime updates.</p>
                <button onClick={() => setView('gallery')} className="text-[10px] font-bold uppercase tracking-[0.2em] bg-slate-900 text-white px-8 py-4 rounded-full hover:bg-sira-purple transition-all shadow-xl">
                  Explore the Portfolios
                </button>
@@ -391,9 +415,24 @@ function EditorApp() {
           )}
 
           {view === 'questions' && (
-            <motion.div key="questions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" onClick={handleHomeClick}>
-              <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white p-8 md:p-12 rounded-3xl max-w-2xl w-full shadow-2xl relative overflow-hidden">
-                <button onClick={handleHomeClick} className="absolute top-6 right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10">✕</button>
+            <motion.div 
+              key="questions" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" 
+              onClick={handleHomeClick}
+            >
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0, y: 20 }} 
+                animate={{ scale: 1, opacity: 1, y: 0 }} 
+                onClick={(e) => e.stopPropagation()} 
+                // MOBILE FIXES: 
+                // max-h-[85vh] prevents overlap with header
+                // overflow-hidden flex flex-col ensures scrolling happens INSIDE the box
+                className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh] md:h-auto"
+              >
+                <button onClick={handleHomeClick} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10">✕</button>
                 <QuestionStep 
                   templateId={selectedTemplate} 
                   form={form} 
@@ -408,7 +447,7 @@ function EditorApp() {
 
           {view === 'preview' && (
             <motion.div key="preview" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-7xl mx-auto">
-              <div className="mb-8">
+              <div className="mb-6 md:mb-8">
                 <button onClick={() => setView('questions')} className="group text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-sira-purple flex items-center gap-2 transition-colors">
                   ← Back to Editor
                 </button>
@@ -426,41 +465,41 @@ function EditorApp() {
       </main>
       
       {/* FOOTER */}
-      <footer className="mt-20 border-t border-slate-100 pt-16 pb-12 px-6">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+      <footer className="mt-12 md:mt-20 border-t border-slate-100 pt-12 md:pt-16 pb-8 md:pb-12 px-6">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           
-          <div className="space-y-4">
-            <div className="flex items-baseline gap-2">
+          <div className="space-y-3 md:space-y-4 text-center md:text-left">
+            <div className="flex items-baseline justify-center md:justify-start gap-2">
               <span className="text-xl font-heading text-slate-900 font-bold tracking-tight">Sira</span>
               <span className="text-lg font-arabic text-slate-900/40">سيرة</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-xs uppercase tracking-widest">
+            <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto md:mx-0 uppercase tracking-widest">
               Architecting professional digital identities for the Kingdom's next generation of leaders.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Support & Contact</h4>
+          <div className="space-y-3 md:space-y-4 text-center md:text-left">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Support</h4>
             <div className="flex flex-col gap-2">
               <a href="mailto:support@sira.app" className="text-sm text-slate-500 hover:text-sira-purple transition-colors">support@sira.app</a>
-              <p className="text-sm text-slate-500">Dhahran, Eastern Province, KSA</p>
+              <p className="text-sm text-slate-500">Dhahran, KSA</p>
             </div>
           </div>
 
-          <div className="space-y-4 md:text-right">
+          <div className="space-y-3 md:space-y-4 text-center md:text-right">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Credits</h4>
             <p className="text-sm text-slate-500 leading-relaxed">
               Designed & Developed by <span className="text-slate-900 font-medium">Dena Alharbi</span>
             </p>
-            <div className="flex md:justify-end gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-300">
+            <div className="flex justify-center md:justify-end gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-300">
               <a href="#" className="hover:text-slate-900">Privacy</a>
               <a href="#" className="hover:text-slate-900">Terms</a>
             </div>
           </div>
         </div>
         
-        <div className="mt-16 text-center">
-          <span className="font-heading italic text-sm tracking-[0.3em] text-slate-200 uppercase">
+        <div className="mt-12 text-center">
+          <span className="font-heading italic text-xs md:text-sm tracking-[0.3em] text-slate-200 uppercase">
             © 2026 Sira Premium Systems
           </span>
         </div>
