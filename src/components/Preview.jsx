@@ -5,37 +5,53 @@ const templateMap = {
   'BasicFree': BasicFree,
 };
 
-export default function Preview({ form, onBack, onNext }) {
-  const [device, setDevice] = useState('mobile'); // Default to mobile to test the fix
+export default function Preview({ form, onBack, onNext, isEditing }) {
+  const [device, setDevice] = useState('mobile'); 
 
   const SelectedTemplate = templateMap[form.templateId] || templateMap['BasicFree'];
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start h-[calc(100vh-140px)]">
       
-      {/* LEFT PANEL: Controls (No changes here) */}
+      {/* LEFT PANEL: Controls */}
       <aside className="w-full lg:w-1/4 space-y-6 flex flex-col h-full">
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex-1 flex flex-col">
-          <h3 className="text-xl font-heading text-slate-900 mb-1">Final Review</h3>
-          <p className="text-slate-400 text-xs uppercase tracking-widest mb-6">Ready to deploy</p>
-          
-          <div className="space-y-4 mb-8">
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-              <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest block mb-1">Live URL Preview</span>
-              <p className="font-mono text-xs text-sira-purple truncate">
-                sira.app/{form.fullName ? form.fullName.split(' ')[0].toLowerCase() : 'user'}
-              </p>
-            </div>
-            <div>
-              <span className="text-[10px] text-slate-300 uppercase font-bold tracking-widest block">Owner</span>
-              <p className="font-medium text-slate-900">{form.fullName || 'Not provided'}</p>
+        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex-1 flex flex-col justify-between">
+          <div>
+            {/* --- DYNAMIC HEADER LOGIC --- */}
+            <h3 className="text-xl font-heading text-slate-900 mb-1">
+              {isEditing ? 'Update Review' : 'Final Review'}
+            </h3>
+            <p className="text-slate-400 text-xs uppercase tracking-widest mb-6">
+              {isEditing ? 'Ready to update deployment' : 'Ready to deploy'}
+            </p>
+            
+            <div className="space-y-4 mb-8">
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest block mb-1">Live URL Preview</span>
+                <p className="font-mono text-xs text-sira-purple truncate">
+                  sira.app/{form.fullName ? form.fullName.split(' ')[0].toLowerCase() : 'user'}
+                </p>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-300 uppercase font-bold tracking-widest block">Owner</span>
+                <p className="font-medium text-slate-900">{form.fullName || 'Not provided'}</p>
+              </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-3 mt-auto">
-            <button onClick={onNext} className="w-full py-4 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-sira-purple transition-all shadow-xl active:scale-95">
-              Confirm & Deploy
+            {/* --- DYNAMIC BUTTON LOGIC --- */}
+            <button 
+              onClick={onNext} 
+              className={`w-full py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-xl active:scale-95 ${
+                isEditing 
+                ? 'bg-sira-purple text-white hover:bg-slate-900' // Purple for Updates
+                : 'bg-slate-900 text-white hover:bg-sira-purple' // Black for New Deploys
+              }`}
+            >
+              {isEditing ? 'Confirm & Update Deployment' : 'Confirm & Deploy'}
             </button>
+            
             <button onClick={onBack} className="w-full py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-slate-900">
               Edit Content
             </button>
@@ -60,8 +76,6 @@ export default function Preview({ form, onBack, onNext }) {
       </aside>
 
       {/* RIGHT PANEL: The Preview Area */}
-      {/* 1. Use 'flex items-center justify-center' to center the phone */}
-      {/* 2. Remove 'overflow-hidden' from this parent so we don't clip shadows */}
       <div className="w-full lg:w-3/4 bg-[#Eef0f2] rounded-3xl border border-slate-200 h-full relative flex items-center justify-center p-4 shadow-inner z-0">
         
         {/* ================= DESKTOP FRAME ================= */}
@@ -85,9 +99,6 @@ export default function Preview({ form, onBack, onNext }) {
 
         {/* ================= MOBILE FRAME (FIXED) ================= */}
         {device === 'mobile' && (
-          // 3. THE SCALE WRAPPER
-          // We force scale-[0.65] (65% size) so the big 850px phone fits in the ~600px container.
-          // We use 'origin-center' so it shrinks right into the middle.
           <div className="transform scale-[0.65] lg:scale-[0.70] xl:scale-[0.80] transition-transform duration-500 origin-center">
             
             {/* The Physical Device Body (Fixed Dimensions: 393x852) */}
@@ -113,14 +124,10 @@ export default function Preview({ form, onBack, onNext }) {
 
                 {/* DYNAMIC ISLAND (Fixed) */}
                 <div className="absolute top-[11px] left-1/2 -translate-x-1/2 h-[35px] w-[120px] bg-black rounded-[20px] z-50 pointer-events-none flex items-center justify-end pr-3">
-                   <div className="w-3 h-3 rounded-full bg-[#111] shadow-inner"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#111] shadow-inner"></div>
                 </div>
 
-                {/* SCROLLABLE CONTENT 
-                    - This is where the scroll happens.
-                    - pt-[50px] ensures content starts BELOW the notch.
-                    - pb-[30px] ensures content isn't covered by the home bar. 
-                */}
+                {/* SCROLLABLE CONTENT */}
                 <div className="flex-1 w-full overflow-y-auto custom-scrollbar pt-[50px] pb-[30px] bg-white">
                   <SelectedTemplate data={form} />
                 </div>

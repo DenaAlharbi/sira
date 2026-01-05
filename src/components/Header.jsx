@@ -47,7 +47,7 @@ export default function Header({
             <button onClick={onPricing} className="hover:text-slate-900 transition-colors">Pricing</button>
             
             {/* DYNAMIC AUTH SECTION */}
-            {!user ? (
+          {/* {!user ? (
               <button 
                 onClick={onSignIn} // FIXED: Now triggers the modal
                 className="hover:text-slate-900 transition-colors border-l border-slate-200 pl-8"
@@ -69,7 +69,13 @@ export default function Header({
                   Logout
                 </button>
               </div>
-            )}
+            )}*/}
+            <button 
+    onClick={onOpenDashboard} 
+    className="text-sira-purple hover:opacity-70 transition-all border-l border-slate-200 pl-8 animate-fadeIn"
+  >
+    Test Dashboard
+  </button>
           </nav>
           
           <button 

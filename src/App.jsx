@@ -12,7 +12,7 @@ import OnboardingModal from './components/OnboardingModal';
 import PaymentModal from './components/PaymentModal';
 import DeploymentModal from './components/DeploymentModal';
 import AuthModal from './components/AuthModal'; 
-import DashboardModal from './components/DashboardModal'; // NEW: Add this
+import DashboardModal from './components/DashboardModal'; 
 
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
@@ -64,6 +64,10 @@ function EditorApp() {
   const [isDeploying, setIsDeploying] = useState(false); 
   const [isAuthOpen, setIsAuthOpen] = useState(false); 
   const [isDashboardOpen, setIsDashboardOpen] = useState(false); 
+  
+  // EDIT MODE STATE
+  const [isEditMode, setIsEditMode] = useState(false); 
+  const [existingId, setExistingId] = useState(null); // Tracks which ID to update
 
   // Data
   const [selectedTemplate, setSelectedTemplate] = useState('BasicFree'); 
@@ -84,6 +88,8 @@ function EditorApp() {
     if (paymentStatus === 'paid') {
       const savedForm = localStorage.getItem('sira_form_backup');
       const savedTemplate = localStorage.getItem('sira_template_backup');
+      const savedEditMode = localStorage.getItem('sira_edit_mode') === 'true'; // Recover edit mode
+      const savedId = localStorage.getItem('sira_existing_id'); // Recover ID
       
       if (savedForm && savedTemplate) {
         const parsedForm = JSON.parse(savedForm);
@@ -95,27 +101,48 @@ function EditorApp() {
           setDeployedUsername(safeUsername);
 
           try {
-            const { error } = await supabase
-              .from('profiles')
-              .insert([{ 
-                username: safeUsername, 
-                full_name: parsedForm.fullName,
-                template_id: savedTemplate,
-                data: parsedForm,
-                owner_email: localStorage.getItem('sira_email_backup') 
-              }]);
+            let error;
+            
+            if (savedEditMode && savedId) {
+               // UPDATE LOGIC
+               const result = await supabase
+                .from('profiles')
+                .update({ 
+                  data: parsedForm, 
+                  template_id: savedTemplate 
+                })
+                .eq('id', savedId);
+               error = result.error;
+            } else {
+               // INSERT LOGIC
+               const result = await supabase
+                .from('profiles')
+                .insert([{ 
+                  username: safeUsername, 
+                  full_name: parsedForm.fullName,
+                  template_id: savedTemplate,
+                  data: parsedForm,
+                  owner_email: localStorage.getItem('sira_email_backup') 
+                }]);
+               error = result.error;
+            }
             
             if (error) throw error;
+            
             setIsDeploying(true); 
             
+            // Clean up
             window.history.replaceState({}, document.title, "/");
             localStorage.removeItem('sira_form_backup');
             localStorage.removeItem('sira_template_backup');
             localStorage.removeItem('sira_email_backup');
+            localStorage.removeItem('sira_edit_mode');
+            localStorage.removeItem('sira_existing_id');
           } catch (err) {
             console.error("Deployment Recovery Error:", err.message);
           }
         };
+
         finalizeDeployment();
       }
     }
@@ -127,12 +154,20 @@ function EditorApp() {
   const handleHomeClick = () => {
     setView('gallery');
     setShowOnboarding(false);
+    setIsEditMode(false); 
+    setExistingId(null); // Reset ID
+    setForm({ fullName: '', title: '', bio: '', experience: [], contact: [] }); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCheckoutStart = () => {
     localStorage.setItem('sira_form_backup', JSON.stringify(form));
     localStorage.setItem('sira_template_backup', selectedTemplate);
+    
+    // Save Edit Mode state for recovery
+    localStorage.setItem('sira_edit_mode', isEditMode);
+    if (existingId) localStorage.setItem('sira_existing_id', existingId);
+    
     setIsPaymentOpen(true);
   };
 
@@ -146,15 +181,33 @@ function EditorApp() {
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .insert([{ 
-          username: safeUsername, 
-          full_name: form.fullName,
-          template_id: selectedTemplate,
-          data: form,
-          owner_email: paymentResult.owner_email 
-        }]);
+      let error;
+
+      if (isEditMode && existingId) {
+        // --- UPDATE EXISTING PORTFOLIO ---
+        // Keeps the same URL, just updates content
+        const result = await supabase
+          .from('profiles')
+          .update({ 
+            data: form,
+            template_id: selectedTemplate,
+            full_name: form.fullName // Update searchable name
+          })
+          .eq('id', existingId);
+        error = result.error;
+      } else {
+        // --- CREATE NEW PORTFOLIO ---
+        const result = await supabase
+          .from('profiles')
+          .insert([{ 
+            username: safeUsername, 
+            full_name: form.fullName,
+            template_id: selectedTemplate,
+            data: form,
+            owner_email: paymentResult.owner_email 
+          }]);
+        error = result.error;
+      }
       
       if (error) throw error;
       setIsDeploying(true);
@@ -163,12 +216,13 @@ function EditorApp() {
     }
   };
 
-  // NEW: Function to handle editing an existing portfolio from Dashboard
   const handleEditPortfolio = (portfolio) => {
     setForm(portfolio.data);
     setSelectedTemplate(portfolio.template_id);
+    setIsEditMode(true); 
+    setExistingId(portfolio.id); // Track which ID we are editing
     setIsDashboardOpen(false);
-    setView('questions'); // Take user straight to the editor
+    setView('questions'); 
   };
 
   return (
@@ -183,7 +237,6 @@ function EditorApp() {
         onOpenDashboard={() => setIsDashboardOpen(true)}
       />
 
-      {/* --- MODALS (FIXED: Added Auth and Dashboard Modals here) --- */}
       <AnimatePresence>
         {showOnboarding && <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />}
         
@@ -203,7 +256,7 @@ function EditorApp() {
       <PaymentModal 
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
-        amount={249} 
+        amount={isEditMode ? 49 : 249} // Discounted price for updates
         onPaymentSuccess={handlePaymentSuccess}
       />
 
@@ -242,7 +295,14 @@ function EditorApp() {
             <motion.div key="questions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" onClick={handleHomeClick}>
               <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white p-8 md:p-12 rounded-3xl max-w-2xl w-full shadow-2xl relative overflow-hidden">
                 <button onClick={handleHomeClick} className="absolute top-6 right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10">✕</button>
-                <QuestionStep templateId={selectedTemplate} form={form} updateForm={updateForm} onNext={() => setView('preview')} onExit={handleHomeClick} />
+                <QuestionStep 
+                  templateId={selectedTemplate} 
+                  form={form} 
+                  updateForm={updateForm} 
+                  onNext={() => setView('preview')} 
+                  onBack={() => setView('gallery')} // FIXED: This was missing
+                  onExit={handleHomeClick} 
+                />
               </motion.div>
             </motion.div>
           )}
@@ -254,7 +314,12 @@ function EditorApp() {
                   ← Back to Editor
                 </button>
               </div>
-              <Preview form={{...form, templateId: selectedTemplate}} onBack={() => setView('questions')} onNext={handleCheckoutStart} />
+              <Preview 
+                form={{...form, templateId: selectedTemplate}} 
+                onBack={() => setView('questions')} 
+                onNext={handleCheckoutStart} 
+                isEditing={isEditMode}
+              />
             </motion.div>
           )}
 
