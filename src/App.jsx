@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from './supabaseClient'; 
 
 // --- COMPONENT IMPORTS ---
-// Ensure these files exist in your src/components folder with these EXACT names
 import Header from './components/Header';
 import Gallery from './components/Gallery';
 import QuestionStep from './components/QuestionStep';
@@ -73,9 +72,8 @@ function EditorApp() {
     contact: []
   });
 
-  // --- 1. SESSION RECOVERY (Fixed Reference Error) ---
+  // --- 1. SESSION RECOVERY (Handles Email Capture) ---
   useEffect(() => {
-    // We define 'params' immediately so it's never undefined
     const params = new URLSearchParams(window.location.search);
     const paymentStatus = params.get('status');
 
@@ -89,7 +87,6 @@ function EditorApp() {
         setSelectedTemplate(savedTemplate);
 
         const finalizeDeployment = async () => {
-          // Create safe username
           const safeUsername = (parsedForm.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
           setDeployedUsername(safeUsername);
 
@@ -100,17 +97,21 @@ function EditorApp() {
                 username: safeUsername, 
                 full_name: parsedForm.fullName,
                 template_id: savedTemplate,
-                data: parsedForm 
+                data: parsedForm,
+                // The email will be retrieved by your backend or 
+                // you can store the email in localStorage during handleCheckoutStart
+                owner_email: localStorage.getItem('sira_email_backup') 
               }]);
             
             if (error) throw error;
             
-            setIsDeploying(true); // Open Success Modal
+            setIsDeploying(true); 
             
             // Clean up
             window.history.replaceState({}, document.title, "/");
             localStorage.removeItem('sira_form_backup');
             localStorage.removeItem('sira_template_backup');
+            localStorage.removeItem('sira_email_backup');
           } catch (err) {
             console.error("Deployment Recovery Error:", err.message);
           }
@@ -137,9 +138,15 @@ function EditorApp() {
   };
 
   const handlePaymentSuccess = async (paymentResult) => {
+    // paymentResult now includes 'owner_email' from our updated PaymentModal
     setIsPaymentOpen(false);
     const safeUsername = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
     setDeployedUsername(safeUsername);
+
+    // Save email to backup just in case a redirect happens immediately
+    if (paymentResult.owner_email) {
+        localStorage.setItem('sira_email_backup', paymentResult.owner_email);
+    }
 
     try {
       const { error } = await supabase
@@ -148,7 +155,8 @@ function EditorApp() {
           username: safeUsername, 
           full_name: form.fullName,
           template_id: selectedTemplate,
-          data: form 
+          data: form,
+          owner_email: paymentResult.owner_email // LINKING THE ACCOUNT HERE
         }]);
       
       if (error) throw error;
