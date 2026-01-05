@@ -10,7 +10,7 @@ import QuestionStep from './components/QuestionStep';
 import Preview from './components/Preview';
 import OnboardingModal from './components/OnboardingModal';
 import PaymentModal from './components/PaymentModal';
-import DeploymentModal from './components/DeploymentModal';
+import DeploymentModal from '../DeploymentModal';
 
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
@@ -76,7 +76,7 @@ function EditorApp() {
   // --- 1. SESSION RECOVERY (After Bank Redirect) ---
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
-    const paymentStatus = query.get('status');
+   console.log("Redirect Params:", params.toString());
 
     if (paymentStatus === 'paid') {
       const savedForm = localStorage.getItem('sira_form_backup');
