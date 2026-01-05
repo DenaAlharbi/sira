@@ -11,6 +11,8 @@ import Preview from './components/Preview';
 import OnboardingModal from './components/OnboardingModal';
 import PaymentModal from './components/PaymentModal';
 import DeploymentModal from './components/DeploymentModal';
+import AuthModal from './components/AuthModal'; 
+import DashboardModal from './components/DashboardModal'; // NEW: Add this
 
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
@@ -60,6 +62,8 @@ function EditorApp() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false); 
+  const [isAuthOpen, setIsAuthOpen] = useState(false); 
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false); 
 
   // Data
   const [selectedTemplate, setSelectedTemplate] = useState('BasicFree'); 
@@ -72,7 +76,7 @@ function EditorApp() {
     contact: []
   });
 
-  // --- 1. SESSION RECOVERY (Handles Email Capture) ---
+  // --- 1. SESSION RECOVERY ---
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paymentStatus = params.get('status');
@@ -98,16 +102,12 @@ function EditorApp() {
                 full_name: parsedForm.fullName,
                 template_id: savedTemplate,
                 data: parsedForm,
-                // The email will be retrieved by your backend or 
-                // you can store the email in localStorage during handleCheckoutStart
                 owner_email: localStorage.getItem('sira_email_backup') 
               }]);
             
             if (error) throw error;
-            
             setIsDeploying(true); 
             
-            // Clean up
             window.history.replaceState({}, document.title, "/");
             localStorage.removeItem('sira_form_backup');
             localStorage.removeItem('sira_template_backup');
@@ -116,7 +116,6 @@ function EditorApp() {
             console.error("Deployment Recovery Error:", err.message);
           }
         };
-
         finalizeDeployment();
       }
     }
@@ -138,12 +137,10 @@ function EditorApp() {
   };
 
   const handlePaymentSuccess = async (paymentResult) => {
-    // paymentResult now includes 'owner_email' from our updated PaymentModal
     setIsPaymentOpen(false);
     const safeUsername = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
     setDeployedUsername(safeUsername);
 
-    // Save email to backup just in case a redirect happens immediately
     if (paymentResult.owner_email) {
         localStorage.setItem('sira_email_backup', paymentResult.owner_email);
     }
@@ -156,7 +153,7 @@ function EditorApp() {
           full_name: form.fullName,
           template_id: selectedTemplate,
           data: form,
-          owner_email: paymentResult.owner_email // LINKING THE ACCOUNT HERE
+          owner_email: paymentResult.owner_email 
         }]);
       
       if (error) throw error;
@@ -164,6 +161,14 @@ function EditorApp() {
     } catch (err) {
       alert("Deployment Error: " + err.message);
     }
+  };
+
+  // NEW: Function to handle editing an existing portfolio from Dashboard
+  const handleEditPortfolio = (portfolio) => {
+    setForm(portfolio.data);
+    setSelectedTemplate(portfolio.template_id);
+    setIsDashboardOpen(false);
+    setView('questions'); // Take user straight to the editor
   };
 
   return (
@@ -174,10 +179,25 @@ function EditorApp() {
         onTemplates={() => setView('gallery')}
         onPricing={() => setView('pricing')}
         onGetStarted={() => setShowOnboarding(true)} 
+        onSignIn={() => setIsAuthOpen(true)}
+        onOpenDashboard={() => setIsDashboardOpen(true)}
       />
 
+      {/* --- MODALS (FIXED: Added Auth and Dashboard Modals here) --- */}
       <AnimatePresence>
         {showOnboarding && <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />}
+        
+        {isAuthOpen && (
+          <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+        )}
+
+        {isDashboardOpen && (
+          <DashboardModal 
+            isOpen={isDashboardOpen} 
+            onClose={() => setIsDashboardOpen(false)} 
+            onEditPortfolio={handleEditPortfolio}
+          />
+        )}
       </AnimatePresence>
 
       <PaymentModal 
