@@ -28,7 +28,7 @@ export default function BasicFree({ data }) {
           <p className="text-lg md:text-xl text-slate-500 font-medium">
             {title}
           </p>
-          <div className="w-12 h-1 bg-black mt-8"></div>
+         <div className="w-full h-1 bg-black mt-8"></div>
         </header>
 
         <main className="space-y-16">

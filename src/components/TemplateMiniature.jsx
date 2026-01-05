@@ -8,63 +8,77 @@ export default function TemplateMiniature({ templateId }) {
   // 3. scale-[0.4]: Shrinks it back to fit perfectly (2.5 * 0.4 = 1)
   const scaleWrapperClass = "absolute inset-0 w-[250%] h-[250%] origin-top-left transform scale-[0.4] bg-white overflow-hidden pointer-events-none select-none";
 
-  // RENDER: THE STANDARD (BasicFree)
+ // RENDER: THE STANDARD (BasicFree)
   if (templateId === 'BasicFree') {
     return (
       <div className="w-full h-full relative bg-white">
         <div className={scaleWrapperClass}>
-          {/* We increase padding because we are working on a huge canvas now */}
-          <div className="p-12 flex flex-col h-full text-black font-sans">
+          {/* Main Canvas Padding */}
+          <div className="p-16 flex flex-col h-full text-black font-sans text-left">
             
-            {/* Header */}
-            <div className="border-b-[6px] border-black pb-8 mb-10">
-              <h1 className="text-7xl font-bold uppercase tracking-tighter mb-4">Sara Al-Amri</h1>
-              <p className="text-3xl text-gray-500 font-medium">Digital Marketing Specialist</p>
-            </div>
-
-            {/* About */}
+            {/* Header: Left Aligned + Full Width Line */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold uppercase tracking-widest mb-4 border-l-[6px] border-black pl-4">About</h2>
-              <p className="text-xl text-gray-600 leading-relaxed max-w-4xl">
-                Strategic marketer with 5+ years of experience driving growth for Saudi startups. Specialized in social media strategy and brand positioning.
-              </p>
+              <h1 className="text-7xl font-bold tracking-tight mb-4 text-black">Sara Al-Amri</h1>
+              <p className="text-3xl text-gray-500 font-medium">Digital Marketing Specialist</p>
+              {/* The New Black Line */}
+              <div className="w-full h-2 bg-black mt-8"></div>
             </div>
 
-            {/* Experience Mockup */}
-            <div className="flex-1">
-              <h2 className="text-xl font-bold uppercase tracking-widest mb-6 border-l-[6px] border-black pl-4">Experience</h2>
-              <div className="space-y-8">
-                <div>
-                  <div className="flex justify-between items-baseline mb-2">
-                    <h3 className="text-3xl font-bold">Miswog Agency</h3>
-                    <span className="text-lg text-gray-400">2021-Present</span>
+            <div className="space-y-12">
+              {/* About */}
+              <div>
+                <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">About</h2>
+                <p className="text-2xl text-gray-700 leading-relaxed max-w-5xl">
+                  Strategic marketer with 5+ years of experience driving growth for Saudi startups. Specialized in social media strategy.
+                </p>
+              </div>
+
+              {/* Experience: Timeline Style */}
+              <div>
+                <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-gray-400 mb-8">Experience</h2>
+                <div className="border-l-4 border-gray-100 pl-8 space-y-10 ml-2">
+                  
+                  {/* Job 1 */}
+                  <div className="relative">
+                    {/* Timeline Dot */}
+                    <div className="absolute -left-[42px] top-3 w-5 h-5 rounded-full bg-gray-200 border-4 border-white"></div>
+                    <div className="flex justify-between items-baseline mb-2">
+                      <h3 className="text-3xl font-bold">Miswog Agency</h3>
+                      <span className="text-lg text-gray-400 font-mono">2021-Present</span>
+                    </div>
+                    <p className="text-xl text-gray-600 font-medium uppercase tracking-wide">Senior Manager</p>
                   </div>
-                  <p className="text-lg text-gray-500">Senior Campaign Manager leading a team of 4.</p>
-                </div>
-                <div>
-                  <div className="flex justify-between items-baseline mb-2">
-                    <h3 className="text-3xl font-bold">Tamara</h3>
-                    <span className="text-lg text-gray-400">2019-2021</span>
+
+                  {/* Job 2 */}
+                  <div className="relative">
+                    <div className="absolute -left-[42px] top-3 w-5 h-5 rounded-full bg-gray-200 border-4 border-white"></div>
+                    <div className="flex justify-between items-baseline mb-2">
+                      <h3 className="text-3xl font-bold">Tamara</h3>
+                      <span className="text-lg text-gray-400 font-mono">2019-2021</span>
+                    </div>
+                    <p className="text-xl text-gray-600 font-medium uppercase tracking-wide">Strategist</p>
                   </div>
-                  <p className="text-lg text-gray-500">Content Strategist for B2B sector.</p>
+
                 </div>
               </div>
-            </div>
 
-            {/* Contact Footer */}
-            <div className="bg-black text-white p-8 mt-auto rounded-3xl">
-              <div className="flex justify-between items-center">
-                 <span className="text-xl font-bold uppercase tracking-widest text-gray-400">Contact</span>
-                 <span className="text-2xl font-bold">sara@example.com</span>
+              {/* Contact: Grid Style (No more black footer) */}
+              <div className="pt-4">
+                 <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">Connect</h2>
+                 
+                 {/* Removed 'grid grid-cols-2' so this div takes full width */}
+                 <div className="border-2 border-gray-200 p-6 rounded-xl w-full">
+                   <span className="text-sm uppercase tracking-widest text-gray-400 block mb-2">Email</span>
+                   <span className="text-xl font-bold truncate block">sara@example.com</span>
+                 </div>
               </div>
-            </div>
 
+            </div>
           </div>
         </div>
       </div>
     );
   }
-
   // RENDER: HERITAGE (Al-Majlis)
   if (templateId === 'Heritage') {
     return (
