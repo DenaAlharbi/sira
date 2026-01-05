@@ -1,21 +1,22 @@
 import React from 'react';
 
 export default function BasicFree({ data }) {
-  // Destructure data with fallbacks to prevent crashes
+  // 1. Safe Destructuring with Defaults
+  // If 'data' is missing (or user didn't type anything), we show placeholders.
   const { 
     fullName = 'Your Name', 
     title = 'Professional Title', 
-    bio = 'No biography provided.', 
+    bio = 'No biography provided yet.', 
     experience = [], 
     contact = [] 
-  } = data;
+  } = data || {}; // <--- The || {} prevents crashes if data is null
 
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       
-      {/* 1. HEADER / HERO */}
+      {/* HEADER */}
       <header className="border-b-4 border-black py-20 px-6 md:px-12 max-w-4xl mx-auto">
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase mb-4">
+        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase mb-4 break-words">
           {fullName}
         </h1>
         <p className="text-xl md:text-2xl font-medium text-gray-600">
@@ -25,7 +26,7 @@ export default function BasicFree({ data }) {
 
       <main className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-20">
         
-        {/* 2. ABOUT SECTION */}
+        {/* ABOUT */}
         <section>
           <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-4 border-black pl-4">
             About Me
@@ -35,13 +36,13 @@ export default function BasicFree({ data }) {
           </p>
         </section>
 
-        {/* 3. EXPERIENCE SECTION */}
+        {/* EXPERIENCE (Dynamic List) */}
         <section>
           <h2 className="text-sm font-bold uppercase tracking-widest mb-8 border-l-4 border-black pl-4">
             Experience
           </h2>
           <div className="space-y-12">
-            {experience.length > 0 ? (
+            {experience && experience.length > 0 ? (
               experience.map((job, index) => (
                 <div key={index} className="group">
                   <div className="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2">
@@ -56,7 +57,7 @@ export default function BasicFree({ data }) {
                     {job.role || 'Role'}
                   </div>
                   <p className="text-gray-600 leading-relaxed max-w-2xl">
-                    {job.description}
+                    {job.description || 'No description added.'}
                   </p>
                 </div>
               ))
@@ -66,25 +67,25 @@ export default function BasicFree({ data }) {
           </div>
         </section>
 
-        {/* 4. CONTACT SECTION */}
+        {/* CONTACT (Dynamic List) */}
         <section className="bg-black text-white p-10 -mx-6 md:-mx-12 md:rounded-3xl mt-20">
           <h2 className="text-sm font-bold uppercase tracking-widest mb-8 text-gray-400">
             Contact
           </h2>
-          {contact.length > 0 ? (
+          {contact && contact.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {contact.map((item, index) => (
                 <div key={index} className="flex flex-col border-b border-gray-800 pb-4">
                   <span className="text-xs uppercase tracking-widest text-gray-500 mb-1">
-                    {item.platform || 'Link'}
+                    {item.platform || 'Platform'}
                   </span>
                   <a 
-                    href={item.value?.includes('@') ? `mailto:${item.value}` : item.value} 
+                    href={item.value && item.value.includes('@') ? `mailto:${item.value}` : item.value} 
                     className="text-xl font-bold hover:text-gray-300 transition-colors truncate"
                     target="_blank" 
                     rel="noreferrer"
                   >
-                    {item.value || '...'}
+                    {item.value || 'Link'}
                   </a>
                 </div>
               ))}
@@ -96,7 +97,6 @@ export default function BasicFree({ data }) {
 
       </main>
 
-      {/* FOOTER */}
       <footer className="text-center py-10 text-xs text-gray-400 uppercase tracking-widest">
         © {new Date().getFullYear()} {fullName}
       </footer>
