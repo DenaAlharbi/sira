@@ -76,7 +76,7 @@ function EditorApp() {
   // --- 1. SESSION RECOVERY (After Bank Redirect) ---
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
-   console.log("Redirect Params:", params.toString());
+   const paymentStatus = params.get('status');
 
     if (paymentStatus === 'paid') {
       const savedForm = localStorage.getItem('sira_form_backup');
