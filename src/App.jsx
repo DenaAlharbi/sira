@@ -4,14 +4,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from './supabaseClient'; 
 
 // --- COMPONENT IMPORTS ---
+// Ensure these files exist in your src/components folder with these EXACT names
 import Header from './components/Header';
 import Gallery from './components/Gallery';
 import QuestionStep from './components/QuestionStep';
 import Preview from './components/Preview';
 import OnboardingModal from './components/OnboardingModal';
 import PaymentModal from './components/PaymentModal';
-// Change this line in src/App.jsx
 import DeploymentModal from './components/DeploymentModal';
+
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
 
@@ -25,19 +26,24 @@ function PublicProfile() {
 
   useEffect(() => {
     async function fetchProfile() {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('username', username)
+          .single();
 
-      if (data) setProfile(data);
-      setLoading(false);
+        if (data) setProfile(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchProfile();
   }, [username]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-400 font-sans tracking-widest uppercase text-[10px]">Loading Portfolio...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-400 font-sans tracking-widest uppercase text-[10px]">Architecting...</div>;
   if (!profile) return <div className="min-h-screen flex items-center justify-center text-slate-400 font-sans tracking-widest uppercase text-[10px]">404 | Portfolio Not Found</div>;
 
   if (profile.template_id === 'BasicFree') return <BasicFree data={profile.data} />;
@@ -63,20 +69,15 @@ function EditorApp() {
     fullName: '', 
     title: '', 
     bio: '', 
-    image: null,
     experience: [],
-    projects: [],
-    contact: [],
-    skills: [],
-    portfolio: [],
-    certifications: [],
-    publications: []
+    contact: []
   });
 
-  // --- 1. SESSION RECOVERY (After Bank Redirect) ---
+  // --- 1. SESSION RECOVERY (Fixed Reference Error) ---
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-   const paymentStatus = params.get('status');
+    // We define 'params' immediately so it's never undefined
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get('status');
 
     if (paymentStatus === 'paid') {
       const savedForm = localStorage.getItem('sira_form_backup');
@@ -87,8 +88,8 @@ function EditorApp() {
         setForm(parsedForm);
         setSelectedTemplate(savedTemplate);
 
-        // Finalize the deployment to Supabase
         const finalizeDeployment = async () => {
+          // Create safe username
           const safeUsername = (parsedForm.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
           setDeployedUsername(safeUsername);
 
@@ -103,14 +104,15 @@ function EditorApp() {
               }]);
             
             if (error) throw error;
-            setIsDeploying(true); // Trigger Success Modal
             
-            // Clean UI
+            setIsDeploying(true); // Open Success Modal
+            
+            // Clean up
             window.history.replaceState({}, document.title, "/");
             localStorage.removeItem('sira_form_backup');
             localStorage.removeItem('sira_template_backup');
           } catch (err) {
-            alert("Recovery Error: " + err.message);
+            console.error("Deployment Recovery Error:", err.message);
           }
         };
 
@@ -129,14 +131,12 @@ function EditorApp() {
   };
 
   const handleCheckoutStart = () => {
-    // Backup data before leaving the site for Moyasar
     localStorage.setItem('sira_form_backup', JSON.stringify(form));
     localStorage.setItem('sira_template_backup', selectedTemplate);
     setIsPaymentOpen(true);
   };
 
   const handlePaymentSuccess = async (paymentResult) => {
-    // This handles non-redirecting success (like credit card if iframe stays open)
     setIsPaymentOpen(false);
     const safeUsername = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
     setDeployedUsername(safeUsername);
@@ -202,10 +202,10 @@ function EditorApp() {
 
           {view === 'pricing' && (
             <motion.div key="pricing" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-5xl mx-auto text-center py-20">
-               <h2 className="text-3xl font-heading mb-6 italic">Ownership & Licensing</h2>
-               <p className="mb-8 text-slate-500">One-time purchase. Permanent professional impact.</p>
-               <button onClick={() => setView('gallery')} className="text-[10px] font-bold uppercase tracking-widest text-sira-purple hover:bg-sira-lavender px-6 py-3 rounded-full transition-all">
-                 View Signature Collection
+               <h2 className="text-3xl font-heading mb-6 italic text-slate-900">Ownership & Licensing</h2>
+               <p className="mb-8 text-slate-500 max-w-lg mx-auto leading-relaxed">A singular investment in your digital architecture. Permanent hosting, professional domain, and lifetime updates.</p>
+               <button onClick={() => setView('gallery')} className="text-[10px] font-bold uppercase tracking-[0.2em] bg-slate-900 text-white px-8 py-4 rounded-full hover:bg-sira-purple transition-all shadow-xl">
+                 Explore the Collection
                </button>
             </motion.div>
           )}
