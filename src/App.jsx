@@ -18,6 +18,62 @@ import DashboardModal from './components/DashboardModal';
 import BasicFree from './templates/BasicFree/Index'; 
 
 // =======================================================
+// NEW: CLAIM MODAL (Email Only - No Credit Card)
+// =======================================================
+function ClaimModal({ isOpen, onClose, onClaim }) {
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubmitting(true);
+    await onClaim(email);
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }} 
+        className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl relative"
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-300 hover:text-slate-900">✕</button>
+        
+        <div className="text-center mb-6">
+          <div className="w-12 h-12 bg-sira-purple/10 rounded-full flex items-center justify-center mx-auto mb-4 text-sira-purple">
+            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <h3 className="text-xl font-heading text-slate-900">Link your Portfolio</h3>
+          <p className="text-slate-500 text-xs mt-2">Enter your email to claim this site so you can edit it later.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input 
+            type="email" 
+            placeholder="name@example.com" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-sira-purple focus:ring-1 focus:ring-sira-purple transition-all"
+            required
+          />
+          <button 
+            type="submit" 
+            disabled={submitting}
+            className="w-full py-4 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-sira-purple transition-colors disabled:opacity-50"
+          >
+            {submitting ? 'Linking...' : 'Confirm & Deploy'}
+          </button>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
+// =======================================================
 // 1. PUBLIC PROFILE COMPONENT (The "Live" Website)
 // =======================================================
 function PublicProfile() {
@@ -28,7 +84,7 @@ function PublicProfile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('profiles')
           .select('*')
           .eq('username', username)
@@ -65,9 +121,12 @@ function EditorApp() {
   const [isAuthOpen, setIsAuthOpen] = useState(false); 
   const [isDashboardOpen, setIsDashboardOpen] = useState(false); 
   
+  // NEW: Claim Modal State
+  const [isClaimOpen, setIsClaimOpen] = useState(false);
+
   // EDIT MODE STATE
   const [isEditMode, setIsEditMode] = useState(false); 
-  const [existingId, setExistingId] = useState(null); // Tracks which ID to update
+  const [existingId, setExistingId] = useState(null); 
 
   // Data
   const [selectedTemplate, setSelectedTemplate] = useState('BasicFree'); 
@@ -88,8 +147,8 @@ function EditorApp() {
     if (paymentStatus === 'paid') {
       const savedForm = localStorage.getItem('sira_form_backup');
       const savedTemplate = localStorage.getItem('sira_template_backup');
-      const savedEditMode = localStorage.getItem('sira_edit_mode') === 'true'; // Recover edit mode
-      const savedId = localStorage.getItem('sira_existing_id'); // Recover ID
+      const savedEditMode = localStorage.getItem('sira_edit_mode') === 'true'; 
+      const savedId = localStorage.getItem('sira_existing_id'); 
       
       if (savedForm && savedTemplate) {
         const parsedForm = JSON.parse(savedForm);
@@ -148,55 +207,27 @@ function EditorApp() {
     }
   }, []);
 
-  // --- ACTIONS ---
-  const updateForm = (data) => setForm((prev) => ({ ...prev, ...data }));
-
-  const handleHomeClick = () => {
-    setView('gallery');
-    setShowOnboarding(false);
-    setIsEditMode(false); 
-    setExistingId(null); // Reset ID
-    setForm({ fullName: '', title: '', bio: '', experience: [], contact: [] }); 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleCheckoutStart = () => {
-    localStorage.setItem('sira_form_backup', JSON.stringify(form));
-    localStorage.setItem('sira_template_backup', selectedTemplate);
-    
-    // Save Edit Mode state for recovery
-    localStorage.setItem('sira_edit_mode', isEditMode);
-    if (existingId) localStorage.setItem('sira_existing_id', existingId);
-    
-    setIsPaymentOpen(true);
-  };
-
-  const handlePaymentSuccess = async (paymentResult) => {
-    setIsPaymentOpen(false);
+  // --- CORE DEPLOYMENT FUNCTION ---
+  const handleDeployToSupabase = async (ownerEmail) => {
     const safeUsername = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Math.floor(Math.random() * 1000);
     setDeployedUsername(safeUsername);
-
-    if (paymentResult.owner_email) {
-        localStorage.setItem('sira_email_backup', paymentResult.owner_email);
-    }
 
     try {
       let error;
 
       if (isEditMode && existingId) {
-        // --- UPDATE EXISTING PORTFOLIO ---
-        // Keeps the same URL, just updates content
+        // --- UPDATE EXISTING ---
         const result = await supabase
           .from('profiles')
           .update({ 
             data: form,
             template_id: selectedTemplate,
-            full_name: form.fullName // Update searchable name
+            full_name: form.fullName 
           })
           .eq('id', existingId);
         error = result.error;
       } else {
-        // --- CREATE NEW PORTFOLIO ---
+        // --- CREATE NEW ---
         const result = await supabase
           .from('profiles')
           .insert([{ 
@@ -204,23 +235,81 @@ function EditorApp() {
             full_name: form.fullName,
             template_id: selectedTemplate,
             data: form,
-            owner_email: paymentResult.owner_email 
+            owner_email: ownerEmail 
           }]);
         error = result.error;
       }
       
       if (error) throw error;
+      
       setIsDeploying(true);
+      
     } catch (err) {
       alert("Deployment Error: " + err.message);
     }
+  };
+
+  // --- ACTIONS ---
+  const updateForm = (data) => setForm((prev) => ({ ...prev, ...data }));
+
+  const handleHomeClick = () => {
+    setView('gallery');
+    setShowOnboarding(false);
+    setIsEditMode(false); 
+    setExistingId(null); 
+    setForm({ fullName: '', title: '', bio: '', experience: [], contact: [] }); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // --- SMART CHECKOUT HANDLER ---
+  const handleCheckoutStart = async () => {
+    // Backup data
+    localStorage.setItem('sira_form_backup', JSON.stringify(form));
+    localStorage.setItem('sira_template_backup', selectedTemplate);
+    if (isEditMode) localStorage.setItem('sira_edit_mode', 'true');
+    if (existingId) localStorage.setItem('sira_existing_id', existingId);
+    
+    // 1. FREE TEMPLATE LOGIC
+    if (selectedTemplate === 'BasicFree') {
+       const { data: { user } } = await supabase.auth.getUser();
+       
+       if (user) {
+         // If already logged in, deploy immediately
+         await handleDeployToSupabase(user.email);
+       } else {
+         // If NOT logged in, open the simple Claim Modal (Email Only)
+         setIsClaimOpen(true);
+       }
+    } 
+    // 2. PAID TEMPLATE LOGIC
+    else {
+       setIsPaymentOpen(true);
+    }
+  };
+
+  // --- CLAIM SUBMIT (Free Flow) ---
+  const handleClaimSubmit = async (email) => {
+    setIsClaimOpen(false);
+    // 1. Create the portfolio record immediately
+    await handleDeployToSupabase(email);
+    // 2. Send Magic Link for future editing
+    await supabase.auth.signInWithOtp({ email });
+  };
+
+  // --- PAYMENT SUCCESS (Paid Flow) ---
+  const handlePaymentSuccess = async (paymentResult) => {
+    setIsPaymentOpen(false);
+    if (paymentResult.owner_email) {
+        localStorage.setItem('sira_email_backup', paymentResult.owner_email);
+    }
+    await handleDeployToSupabase(paymentResult.owner_email);
   };
 
   const handleEditPortfolio = (portfolio) => {
     setForm(portfolio.data);
     setSelectedTemplate(portfolio.template_id);
     setIsEditMode(true); 
-    setExistingId(portfolio.id); // Track which ID we are editing
+    setExistingId(portfolio.id); 
     setIsDashboardOpen(false);
     setView('questions'); 
   };
@@ -251,12 +340,21 @@ function EditorApp() {
             onEditPortfolio={handleEditPortfolio}
           />
         )}
+
+        {/* NEW: CLAIM MODAL */}
+        {isClaimOpen && (
+          <ClaimModal 
+            isOpen={isClaimOpen} 
+            onClose={() => setIsClaimOpen(false)} 
+            onClaim={handleClaimSubmit} 
+          />
+        )}
       </AnimatePresence>
 
       <PaymentModal 
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
-        amount={isEditMode ? 49 : 249} // Discounted price for updates
+        amount={isEditMode ? 49 : 249} 
         onPaymentSuccess={handlePaymentSuccess}
       />
 
@@ -301,7 +399,7 @@ function EditorApp() {
                   form={form} 
                   updateForm={updateForm} 
                   onNext={() => setView('preview')} 
-                  onBack={() => setView('gallery')} // FIXED: This was missing
+                  onBack={() => setView('gallery')}
                   onExit={handleHomeClick} 
                 />
               </motion.div>
@@ -327,7 +425,7 @@ function EditorApp() {
         </AnimatePresence>
       </main>
       
-       {/* FOOTER */}
+      {/* FOOTER */}
       <footer className="mt-20 border-t border-slate-100 pt-16 pb-12 px-6">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
           

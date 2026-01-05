@@ -2,104 +2,119 @@ import React from 'react';
 
 export default function BasicFree({ data }) {
   // 1. Safe Destructuring with Defaults
-  // If 'data' is missing (or user didn't type anything), we show placeholders.
   const { 
     fullName = 'Your Name', 
     title = 'Professional Title', 
     bio = 'No biography provided yet.', 
     experience = [], 
     contact = [] 
-  } = data || {}; // <--- The || {} prevents crashes if data is null
+  } = data || {}; 
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-black selection:text-white">
       
-      {/* HEADER */}
-      <header className="border-b-4 border-black py-20 px-6 md:px-12 max-w-4xl mx-auto">
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase mb-4 break-words">
-          {fullName}
-        </h1>
-        <p className="text-xl md:text-2xl font-medium text-gray-600">
-          {title}
-        </p>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-6 md:px-12 py-16 space-y-20">
+      {/* CONTAINER FIX: 
+        - max-w-3xl: Limits width so it doesn't stretch too wide on big screens
+        - mx-auto: Centers the container itself
+        - px-6: Adds side padding for mobile so text doesn't touch edges
+      */}
+      <div className="max-w-3xl mx-auto px-6 md:px-12 py-12 md:py-20">
         
-        {/* ABOUT */}
-        <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-4 border-black pl-4">
-            About Me
-          </h2>
-          <p className="text-lg md:text-xl leading-relaxed text-gray-800 whitespace-pre-wrap">
-            {bio}
+        {/* HEADER */}
+        <header className="mb-16 md:mb-24">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-black leading-tight">
+            {fullName}
+          </h1>
+          <p className="text-lg md:text-xl text-slate-500 font-medium">
+            {title}
           </p>
-        </section>
+          <div className="w-12 h-1 bg-black mt-8"></div>
+        </header>
 
-        {/* EXPERIENCE (Dynamic List) */}
-        <section>
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-8 border-l-4 border-black pl-4">
-            Experience
-          </h2>
-          <div className="space-y-12">
-            {experience && experience.length > 0 ? (
-              experience.map((job, index) => (
-                <div key={index} className="group">
-                  <div className="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2">
-                    <h3 className="text-2xl font-bold group-hover:underline decoration-2 underline-offset-4">
-                      {job.company || 'Company Name'}
-                    </h3>
-                    <span className="text-sm font-mono text-gray-500 mt-1 md:mt-0">
-                      {job.duration || 'Dates'}
-                    </span>
-                  </div>
-                  <div className="text-lg font-medium text-gray-700 mb-3">
-                    {job.role || 'Role'}
-                  </div>
-                  <p className="text-gray-600 leading-relaxed max-w-2xl">
-                    {job.description || 'No description added.'}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 italic">No experience added yet.</p>
-            )}
-          </div>
-        </section>
+        <main className="space-y-16">
+          
+          {/* ABOUT SECTION */}
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-6">
+              About
+            </h2>
+            <p className="text-base md:text-lg leading-relaxed text-slate-800 whitespace-pre-wrap max-w-2xl">
+              {bio}
+            </p>
+          </section>
 
-        {/* CONTACT (Dynamic List) */}
-        <section className="bg-black text-white p-10 -mx-6 md:-mx-12 md:rounded-3xl mt-20">
-          <h2 className="text-sm font-bold uppercase tracking-widest mb-8 text-gray-400">
-            Contact
-          </h2>
-          {contact && contact.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {contact.map((item, index) => (
-                <div key={index} className="flex flex-col border-b border-gray-800 pb-4">
-                  <span className="text-xs uppercase tracking-widest text-gray-500 mb-1">
-                    {item.platform || 'Platform'}
-                  </span>
+          {/* EXPERIENCE SECTION */}
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-8">
+              Experience
+            </h2>
+            <div className="space-y-10 border-l border-slate-100 pl-6 md:pl-8 -ml-2">
+              {experience && experience.length > 0 ? (
+                experience.map((job, index) => (
+                  <div key={index} className="relative">
+                    {/* Timeline Dot */}
+                    <div className="absolute -left-[31px] md:-left-[39px] top-1.5 w-3 h-3 rounded-full bg-slate-200 border-2 border-white"></div>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-2">
+                      <h3 className="text-lg font-bold text-black">
+                        {job.company || 'Company Name'}
+                      </h3>
+                      <span className="text-xs font-mono text-slate-400 mt-1 sm:mt-0">
+                        {job.duration || 'Dates'}
+                      </span>
+                    </div>
+                    <div className="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">
+                      {job.role || 'Role'}
+                    </div>
+                    <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                      {job.description || 'No description added.'}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-400 italic text-sm">No experience added yet.</p>
+              )}
+            </div>
+          </section>
+
+          {/* CONTACT SECTION */}
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-8">
+              Connect
+            </h2>
+            {contact && contact.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {contact.map((item, index) => (
                   <a 
-                    href={item.value && item.value.includes('@') ? `mailto:${item.value}` : item.value} 
-                    className="text-xl font-bold hover:text-gray-300 transition-colors truncate"
+                    key={index}
+                    href={item.value && item.value.includes('@') ? `mailto:${item.value}` : item.value}
                     target="_blank" 
                     rel="noreferrer"
+                    className="block p-4 rounded-lg border border-slate-200 hover:border-black hover:bg-slate-50 transition-all group"
                   >
-                    {item.value || 'Link'}
+                    <span className="text-[10px] uppercase tracking-widest text-slate-400 block mb-1 group-hover:text-slate-600">
+                      {item.platform || 'Link'}
+                    </span>
+                    <span className="text-sm font-medium text-black truncate block">
+                      {item.value || '...'}
+                    </span>
                   </a>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No contact details provided.</p>
-          )}
-        </section>
+                ))}
+              </div>
+            ) : (
+              <p className="text-slate-400 italic text-sm">No contact details provided.</p>
+            )}
+          </section>
 
-      </main>
+        </main>
 
-      <footer className="text-center py-10 text-xs text-gray-400 uppercase tracking-widest">
-        © {new Date().getFullYear()} {fullName}
-      </footer>
+        <footer className="mt-20 pt-10 border-t border-slate-100">
+           <p className="text-xs text-slate-300 uppercase tracking-widest">
+             © {new Date().getFullYear()} {fullName}
+           </p>
+        </footer>
+
+      </div>
     </div>
   );
 }
