@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BasicFree from '../templates/BasicFree/index';
+import BasicFree from '../templates/BasicFree/Index';
 
 const templateMap = {
   'BasicFree': BasicFree,
