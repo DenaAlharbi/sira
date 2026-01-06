@@ -16,6 +16,7 @@ import DashboardModal from './components/DashboardModal';
 
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
+import Vanguard from './templates/Vanguard/Index';
 import ProjectFocus from './templates/ProjectFocus/Index';
 
 // =======================================================
