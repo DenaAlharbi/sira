@@ -144,7 +144,63 @@ const TemplateMiniature = ({ templateId }) => {
       </div>
     </div>
   );
-}
+}// 5. PASTEL FOLIO (The New Template)
+  if (templateId === 'PastelFolio') {
+    return (
+      <div className="w-full h-full relative bg-white overflow-hidden text-left">
+        <div className={scaleWrapperClass}>
+          {/* BACKGROUND: Soft radial gradient matching the real template */}
+          <div className="p-12 flex flex-col h-full bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-pink-100 via-[#FFFBEB] to-purple-100 text-gray-900">
+            
+            {/* Fake Nav */}
+            <div className="flex gap-8 mb-12 border-b border-gray-400/30 pb-4 text-xl font-bold uppercase tracking-widest text-gray-500">
+               <span>Home</span>
+               <span>Work</span>
+               <span>Contact</span>
+            </div>
+
+            {/* Big Typography Header */}
+            <div className="mb-16">
+              <h1 className="text-8xl font-black uppercase leading-[0.85] tracking-tighter text-gray-900">
+                UI/UX<br/>DESIGNER
+              </h1>
+            </div>
+
+            {/* The "Framed" Grid */}
+            <div className="grid grid-cols-2 gap-8">
+              {/* Card 1 */}
+              <div className="bg-white p-3 shadow-sm border border-gray-200">
+                <div className="w-full h-32 bg-gray-100 relative overflow-hidden">
+                   <div className="absolute inset-0 bg-purple-200/50"></div>
+                   <div className="absolute top-4 left-4 w-12 h-12 rounded-full bg-white/50"></div>
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-white p-3 shadow-sm border border-gray-200">
+                <div className="w-full h-32 bg-gray-900 relative overflow-hidden">
+                   <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">GymFit</div>
+                </div>
+              </div>
+              
+              {/* Card 3 */}
+              <div className="bg-white p-3 shadow-sm border border-gray-200">
+                <div className="w-full h-32 bg-gray-100 relative overflow-hidden">
+                   <div className="absolute inset-0 bg-yellow-200/50"></div>
+                </div>
+              </div>
+
+               {/* Card 4 */}
+               <div className="bg-white p-3 shadow-sm border border-gray-200">
+                <div className="w-full h-32 bg-gray-800 relative overflow-hidden"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
   // 2. HERITAGE (Locked)
   if (templateId === 'Heritage') {
     return (
@@ -213,6 +269,14 @@ export default function Gallery({ onSelect }) {
   description: 'High-contrast dark mode with image support for high-end technical leads.',
   price: '$299' // Premium price
 },
+{ 
+      id: 'PastelFolio', 
+      name: 'The Studio', 
+      cat: 'Creative', 
+      color: '#FDF2F8', // Light Pink
+      description: 'Soft gradients and bold typography for designers.',
+      price: '$199' // Optional if you want it to be paid
+    },
     { 
       id: 'Swiss', 
       name: 'Structure v.01', 

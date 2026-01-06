@@ -3,9 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import { FREE_TEMPLATES } from '../templates/templateRegistry';
 
-// Components
+// --- COMPONENT IMPORTS ---
 import Header from '../components/Header';
-import Footer from '../components/Footer'; // New!
+import Footer from '../components/Footer'; 
 import Gallery from '../components/Gallery';
 import QuestionStep from '../components/QuestionStep';
 import Preview from '../components/Preview';
@@ -14,7 +14,7 @@ import PaymentModal from '../components/PaymentModal';
 import DeploymentModal from '../components/DeploymentModal';
 import AuthModal from '../components/AuthModal';
 import DashboardModal from '../components/DashboardModal';
-import ClaimModal from '../components/ClaimModal'; // New!
+import ClaimModal from '../components/ClaimModal'; // Imported, so we deleted the local function
 
 export default function EditorPage() {
   // --- STATE ---

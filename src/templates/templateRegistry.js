@@ -8,6 +8,8 @@ import { config as ProjectFocusConfig } from './ProjectFocus/config';
 import Vanguard from './Vanguard/Index';
 import { config as VanguardConfig } from './Vanguard/config';
 
+import PastelFolio from './PastelFolio/Index';
+import { config as PastelFolioConfig } from './PastelFolio/config';
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -25,6 +27,11 @@ const REGISTRY_DATA = {
      config: VanguardConfig, 
      isPaid: true 
   },
+    'PastelFolio': {
+        component: PastelFolio,
+        config: PastelFolioConfig,
+        isPaid: true
+    }
 };
 
 // --- HELPERS ---
