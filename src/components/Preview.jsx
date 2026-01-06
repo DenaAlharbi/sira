@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import BasicFree from '../templates/BasicFree/Index';
 import ProjectFocus from '../templates/ProjectFocus/Index'; // <--- 1. IMPORT IT
+import Vanguard from '../templates/Vanguard/Index';
 const templateMap = {
   'BasicFree': BasicFree,
   'ProjectFocus': ProjectFocus, // <--- 2. MAP IT
+  'Vanguard': Vanguard
+
 };
 
 export default function Preview({ form, onBack, onNext, isEditing }) {

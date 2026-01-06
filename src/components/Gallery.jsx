@@ -67,32 +67,84 @@ const TemplateMiniature = ({ templateId }) => {
       </div>
     );
   }
-if (templateId === 'ProjectFocus') {
+// 4. PROJECT FOCUS (The Maker) - Updated Visuals
+  if (templateId === 'ProjectFocus') {
     return (
       <div className="w-full h-full relative bg-white overflow-hidden text-left">
         <div className={scaleWrapperClass}>
-          <div className="p-16 flex flex-col h-full bg-slate-50">
-             {/* Header */}
-             <div className="bg-white p-12 rounded-b-[4rem] shadow-sm mb-12">
-               <h1 className="text-8xl font-bold mb-6">Dena</h1>
-               <p className="text-4xl text-slate-400">App Developer</p>
+          {/* BACKGROUND: Matching the new gradient theme */}
+          <div className="p-16 flex flex-col h-full bg-gradient-to-br from-slate-50 via-white to-indigo-50 relative">
+             
+             {/* DECORATIVE MESH BLOBS */}
+             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-200/40 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-200/40 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2"></div>
+
+             {/* HEADER */}
+             <div className="relative z-10 mb-16 px-4">
+               <h1 className="text-9xl font-bold mb-6 text-slate-900 tracking-tight">Dena</h1>
+               <p className="text-5xl text-indigo-600 font-medium mb-12">App Developer</p>
+               
+               {/* Bio Box Preview */}
+               <div className="bg-white/80 backdrop-blur-md p-10 rounded-[2.5rem] border border-indigo-50 shadow-sm w-3/4">
+                  <div className="h-5 bg-slate-200 rounded-full w-full mb-5"></div>
+                  <div className="h-5 bg-slate-200 rounded-full w-2/3"></div>
+               </div>
              </div>
              
-             {/* Grid */}
-             <div className="grid grid-cols-2 gap-8 px-8">
-               <div className="bg-white p-8 rounded-3xl border border-slate-200 h-64">
-                 <h3 className="text-4xl font-bold mb-4">Sira App</h3>
-                 <div className="w-full h-4 bg-slate-100 rounded-full"></div>
+             {/* GRID */}
+             <div className="relative z-10 grid grid-cols-2 gap-10 px-4">
+               
+               {/* Card 1 */}
+               <div className="bg-white p-10 rounded-[2.5rem] border border-indigo-50 shadow-md">
+                 <div className="flex justify-between items-start mb-8">
+                   <h3 className="text-5xl font-bold text-slate-800">Sira App</h3>
+                   <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500">
+                     <span className="text-3xl">↗</span>
+                   </div>
+                 </div>
+                 <div className="h-4 bg-slate-100 rounded-full w-full mb-8"></div>
+                 <div className="w-full h-2 bg-indigo-100 rounded-full"></div>
                </div>
-               <div className="bg-white p-8 rounded-3xl border border-slate-200 h-64">
-                 <h3 className="text-4xl font-bold mb-4">Portfolio</h3>
-                 <div className="w-full h-4 bg-slate-100 rounded-full"></div>
+
+               {/* Card 2 */}
+               <div className="bg-white p-10 rounded-[2.5rem] border border-indigo-50 shadow-md">
+                 <div className="flex justify-between items-start mb-8">
+                   <h3 className="text-5xl font-bold text-slate-800">Portfolio</h3>
+                   <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500">
+                     <span className="text-3xl">↗</span>
+                   </div>
+                 </div>
+                 <div className="h-4 bg-slate-100 rounded-full w-3/4 mb-8"></div>
+                 <div className="w-full h-2 bg-indigo-100 rounded-full"></div>
                </div>
+
              </div>
           </div>
         </div>
       </div>
-    );}
+    );
+  }
+    if (templateId === 'Vanguard') {
+  return (
+    <div className="w-full h-full relative bg-slate-950 overflow-hidden text-left">
+      <div className={scaleWrapperClass}>
+        <div className="p-12 flex flex-col h-full bg-slate-950 relative">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-[80px]"></div>
+            <div className="border-l-4 border-cyan-500 pl-8 mb-12 relative z-10">
+              <h1 className="text-7xl font-bold text-white mb-4">ALEX<br/>MERCER</h1>
+              <p className="text-3xl text-cyan-400 font-mono">FULL STACK</p>
+            </div>
+            <div className="grid grid-cols-1 gap-6 relative z-10">
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
+                 <div className="h-32 w-full bg-slate-800 mb-4 rounded-lg"></div>
+                 <div className="h-4 w-1/2 bg-slate-700 rounded"></div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+}
   // 2. HERITAGE (Locked)
   if (templateId === 'Heritage') {
     return (
@@ -153,6 +205,14 @@ export default function Gallery({ onSelect }) {
       description: 'Serif-heavy leadership layout.',
       locked: true
     },
+    { 
+  id: 'Vanguard', 
+  name: 'Vanguard', 
+  cat: 'Technical', 
+  color: '#0f172a', // Dark Slate
+  description: 'High-contrast dark mode with image support for high-end technical leads.',
+  price: '$299' // Premium price
+},
     { 
       id: 'Swiss', 
       name: 'Structure v.01', 

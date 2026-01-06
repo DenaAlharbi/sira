@@ -132,5 +132,77 @@ export const questionLibrary = {
         { key: 'value', label: 'Username / Link', placeholder: 'e.g. user@example.com', required: true }
       ]
     }
+  ],
+  Vanguard: [
+    {
+      id: 'intro',
+      type: 'section',
+      label: 'System Identity', // Techy naming
+    },
+    {
+      id: 'fullName',
+      key: 'fullName',
+      type: 'text',
+      label: 'Operator Name',
+      placeholder: 'e.g. Sarah Connor',
+      required: true,
+    },
+    {
+      id: 'title',
+      key: 'title',
+      type: 'text',
+      label: 'Role / Specialization',
+      placeholder: 'e.g. Full Stack Architect',
+    },
+    {
+      id: 'bio',
+      key: 'bio',
+      type: 'textarea',
+      label: 'System Logs (Bio)',
+      placeholder: 'Initialize bio sequence...',
+      minLength: 20,
+    },
+    {
+      id: 'projectsSection',
+      type: 'section',
+      label: 'Deployments',
+    },
+    {
+      id: 'projects',
+      key: 'projects',
+      type: 'repeater',
+      label: 'Project Nodes',
+      min: 1, // Minimum 1 required
+      fields: [
+        { key: 'name', label: 'Project Name', placeholder: 'e.g. Nexus API', required: true },
+        { key: 'image', label: 'Cover Image URL', placeholder: 'https://...', type: 'text' }, // NEW IMAGE FIELD
+        { key: 'desc', label: 'Tech Stack / Desc', placeholder: 'React, Node, AI...', type: 'textarea' },
+        { key: 'link', label: 'Live Link', placeholder: 'https://...', type: 'text' }
+      ]
+    },
+    {
+      id: 'contactSection',
+      type: 'section',
+      label: 'Uplink',
+    },
+    {
+      id: 'contact',
+      key: 'contact',
+      type: 'repeater',
+      label: 'Communication Channels',
+      min: 1, // Minimum 1 required
+      max: 4,
+      fields: [
+        { 
+          key: 'type', 
+          label: 'Protocol', 
+          type: 'select', 
+          options: ['Email', 'GitHub', 'LinkedIn', 'Twitter', 'Discord'],
+          required: true 
+        },
+        { key: 'value', label: 'Address', placeholder: 'user@network.com', required: true }
+      ]
+    }
   ]
+
 };
