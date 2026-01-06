@@ -62,9 +62,7 @@ export default function Vanguard({ data }) {
                      />
                      {/* Tech Overlay */}
                      <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-slate-950 to-transparent z-20 flex justify-between items-end">
-                        <div className="font-mono text-xs text-cyan-400 bg-slate-950/80 px-2 py-1 rounded border border-cyan-900/30">
-                          ID: {String(index + 1).padStart(2, '0')}
-                        </div>
+                        
                      </div>
                   </div>
 

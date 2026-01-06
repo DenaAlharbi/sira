@@ -480,8 +480,7 @@ className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:ma
           
           <div className="space-y-3 md:space-y-4 text-center md:text-left">
             <div className="flex items-baseline justify-center md:justify-start gap-2">
-              <span className="text-xl font-heading text-slate-900 font-bold tracking-tight">Sira</span>
-              <span className="text-lg font-arabic text-slate-900/40">سيرة</span>
+              <span className="text-xl font-heading text-slate-900 font-bold tracking-tight">Portfiller</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto md:mx-0 uppercase tracking-widest">
               Architecting professional digital identities for the Kingdom's next generation of leaders.
@@ -491,26 +490,26 @@ className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:ma
           <div className="space-y-3 md:space-y-4 text-center md:text-left">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Support</h4>
             <div className="flex flex-col gap-2">
-              <a href="mailto:support@sira.app" className="text-sm text-slate-500 hover:text-sira-purple transition-colors">support@sira.app</a>
+              <a href="mailto:support@sira.app" className="text-sm text-slate-500 hover:text-sira-purple transition-colors">support@portfiller.sa</a>
               <p className="text-sm text-slate-500">Dhahran, KSA</p>
             </div>
           </div>
 
-          <div className="space-y-3 md:space-y-4 text-center md:text-right">
+          <div className="space-y-3 md:space-y-4 text-center md:text-left">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Credits</h4>
             <p className="text-sm text-slate-500 leading-relaxed">
               Designed & Developed by <span className="text-slate-900 font-medium">Dena Alharbi</span>
             </p>
-            <div className="flex justify-center md:justify-end gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-300">
-              <a href="#" className="hover:text-slate-900">Privacy</a>
-              <a href="#" className="hover:text-slate-900">Terms</a>
+            <div className=" md:justify-end gap-4 text-[10px] text-left font-bold uppercase tracking-widest text-slate-300 ">
+              <a href="#" className="hover:text-slate-900 md:text-left">Privacy Policies</a><br/>
+              <a href="#" className="hover:text-slate-900 md:text-left">Terms and Conditions</a>
             </div>
           </div>
         </div>
         
         <div className="mt-12 text-center">
           <span className="font-heading italic text-xs md:text-sm tracking-[0.3em] text-slate-200 uppercase">
-            © 2026 Sira Premium Systems
+            © 2026 Portfiller Premium Systems
           </span>
         </div>
       </footer>

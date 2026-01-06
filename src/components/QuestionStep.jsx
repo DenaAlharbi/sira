@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { questionLibrary } from '../data/questionLibrary';
+import { supabase } from '../supabaseClient'; 
 
 export default function QuestionStep({ templateId, form, updateForm, onNext, onExit }) {
   const questions = questionLibrary[templateId] || questionLibrary['BasicFree']; 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [error, setError] = useState(null);
+  
+  // NEW: Track uploading state (which row is currently uploading?)
+  const [uploadingState, setUploadingState] = useState({}); // { "rowIndex-fieldKey": true/false }
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -50,17 +54,85 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
     updateForm({ [fieldKey]: updatedItems });
   };
 
+// --- 1. IMAGE COMPRESSION HELPER (Add this above handleImageUpload) ---
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200; // Resize huge images to 1200px width
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scaleSize;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Compress to JPEG at 70% quality
+          canvas.toBlob((blob) => {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          }, 'image/jpeg', 0.7); 
+        };
+      };
+    });
+  };
+
+  // --- 2. UPDATED UPLOAD LOGIC ---
+  const handleImageUpload = async (originalFile, index, fieldKey) => {
+    try {
+      if (!originalFile) return;
+
+      // Set Loading State
+      const loaderKey = `${index}-${fieldKey}`;
+      setUploadingState(prev => ({ ...prev, [loaderKey]: true }));
+
+      // A. COMPRESS THE IMAGE BEFORE UPLOADING
+      const file = await compressImage(originalFile);
+
+      // B. Upload to Supabase (Now it's tiny!)
+      const fileExt = 'jpg'; // We converted it to jpeg
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio-assets') 
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // C. Get the Public URL
+      const { data } = supabase.storage
+        .from('portfolio-assets')
+        .getPublicUrl(filePath);
+
+      // D. Save URL to Form
+      handleRepeaterChange(currentQuestion.key, index, fieldKey, data.publicUrl);
+
+    } catch (error) {
+      console.error(error);
+      alert('Upload failed: ' + (error.message || "Network Error. Try a smaller image."));
+    } finally {
+      // Clear Loading State
+      const loaderKey = `${index}-${fieldKey}`;
+      setUploadingState(prev => ({ ...prev, [loaderKey]: false }));
+    }
+  };
   // --- NAVIGATION & VALIDATION ---
   const handleNext = () => {
-    // 1. Repeater Validation
     if (currentQuestion.type === 'repeater') {
       const currentItems = form[currentQuestion.key] || [];
-      
       if (currentQuestion.min && currentItems.length < currentQuestion.min) {
         setError(`Please add at least ${currentQuestion.min} item(s) to proceed.`);
         return;
       }
-
       if (currentQuestion.fields) {
         for (let item of currentItems) {
            for (let field of currentQuestion.fields) {
@@ -73,18 +145,15 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
       }
     }
 
-    // 2. Text/Textarea Validation
     if (['text', 'textarea'].includes(currentQuestion.type)) {
        const value = form[currentQuestion.key] || '';
-       
        if (currentQuestion.required && value.trim() === '') {
-          setError("This field is required.");
-          return;
+         setError("This field is required.");
+         return;
        }
-
        if (currentQuestion.minLength && value.length < currentQuestion.minLength) {
-          setError(`Please keep writing! Minimum ${currentQuestion.minLength} characters required (Current: ${value.length}).`);
-          return;
+         setError(`Please keep writing! Minimum ${currentQuestion.minLength} characters required.`);
+         return;
        }
     }
 
@@ -104,7 +173,7 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
     }
   };
 
-  // --- INPUT RENDERERS ---
+  // --- RENDER HELPERS ---
   const renderInput = (question) => {
     switch (question.type) {
       case 'text':
@@ -144,49 +213,101 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
 
         return (
           <div className="w-full flex flex-col h-full">
-            {/* SCROLLABLE LIST - Tighter on Mobile */}
             <div className="space-y-3 md:space-y-4 overflow-y-auto pr-1 custom-scrollbar mb-3 md:mb-4 flex-1 min-h-0">
               {items.map((item, index) => (
                 <div key={index} className="p-3 md:p-5 bg-slate-50 rounded-lg md:rounded-xl relative border border-slate-100 shadow-sm animate-fadeIn">
                   <div className="grid grid-cols-1 gap-3 md:gap-4">
                     {question.fields.map((field) => (
                       <div key={field.key}>
-                        <label className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-400 block mb-1 font-bold">
-                          {field.label} {field.required && <span className="text-red-400">*</span>}
-                        </label>
                         
-                        {field.type === 'select' ? (
-                          <div className="relative">
-                            <select
-                              className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white appearance-none focus:border-sira-purple outline-none transition-colors"
+                        {/* ============================= */}
+                        {/* IMAGE UPLOAD RENDERER       */}
+                        {/* ============================= */}
+                        {field.type === 'image' ? (
+                          <div className="space-y-2">
+                             <label className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-400 block mb-1 font-bold">
+                               {field.label} {field.required && <span className="text-red-400">*</span>}
+                             </label>
+                             
+                             <div className="flex items-start gap-4">
+                               {/* PREVIEW BOX (Visible if image exists) */}
+                               {item[field.key] && (
+                                 <div className="w-20 h-20 rounded-lg bg-slate-200 overflow-hidden border border-slate-300 shadow-sm shrink-0">
+                                   <img 
+                                     src={item[field.key]} 
+                                     alt="Uploaded Preview" 
+                                     className="w-full h-full object-cover" 
+                                   />
+                                 </div>
+                               )}
+
+                               {/* UPLOAD BUTTON */}
+                               <div className="flex-1">
+                                 <label className={`cursor-pointer border border-slate-200 bg-white hover:border-sira-purple hover:text-sira-purple transition-all px-4 py-4 rounded-xl text-xs font-bold uppercase tracking-widest flex flex-col items-center justify-center gap-2 w-full h-20 border-dashed ${uploadingState[`${index}-${field.key}`] ? 'opacity-50 pointer-events-none bg-slate-50' : ''}`}>
+                                   
+                                   {/* CONTENT: Loader vs Icon */}
+                                   {uploadingState[`${index}-${field.key}`] ? (
+                                      <>
+                                        <div className="w-4 h-4 border-2 border-sira-purple border-t-transparent rounded-full animate-spin"></div>
+                                        <span>Uploading...</span>
+                                      </>
+                                   ) : (
+                                      <>
+                                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                        <span>{item[field.key] ? 'Replace Image' : 'Click to Upload'}</span>
+                                      </>
+                                   )}
+
+                                   <input 
+                                     type="file" 
+                                     accept="image/*" 
+                                     className="hidden" 
+                                     onChange={(e) => handleImageUpload(e.target.files[0], index, field.key)}
+                                   />
+                                 </label>
+                               </div>
+                             </div>
+                             {field.helper && <p className="text-[10px] text-slate-400 mt-1">{field.helper}</p>}
+                          </div>
+                        ) : (
+                          
+                        /* STANDARD INPUTS */
+                        <>
+                          <label className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-400 block mb-1 font-bold">
+                            {field.label} {field.required && <span className="text-red-400">*</span>}
+                          </label>
+                          
+                          {field.type === 'select' ? (
+                            <div className="relative">
+                              <select
+                                className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white appearance-none focus:border-sira-purple outline-none transition-colors"
+                                value={item[field.key] || ''}
+                                onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
+                              >
+                                <option value="" disabled>{field.placeholder || 'Select...'}</option>
+                                {field.options.map((opt) => (
+                                  <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                            </div>
+                          ) : field.type === 'textarea' ? (
+                            <textarea
+                              rows={2}
+                              className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors resize-none"
+                              placeholder={field.placeholder}
                               value={item[field.key] || ''}
                               onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
-                            >
-                              <option value="" disabled>{field.placeholder || 'Select...'}</option>
-                              {field.options.map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                            <div className="absolute right-3 top-3 pointer-events-none text-slate-400">
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-                            </div>
-                          </div>
-                        ) : field.type === 'textarea' ? (
-                          <textarea
-                            rows={2}
-                            className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors resize-none"
-                            placeholder={field.placeholder}
-                            value={item[field.key] || ''}
-                            onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors"
-                            placeholder={field.placeholder}
-                            value={item[field.key] || ''}
-                            onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
-                          />
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors"
+                              placeholder={field.placeholder}
+                              value={item[field.key] || ''}
+                              onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
+                            />
+                          )}
+                        </>
                         )}
                       </div>
                     ))}
@@ -194,7 +315,6 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
                   <button 
                     onClick={() => removeRepeaterItem(question.key, index)}
                     className="absolute top-2 right-2 p-1.5 text-slate-300 hover:text-red-500 transition-colors"
-                    title="Remove Item"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                   </button>
@@ -202,7 +322,6 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
               ))}
             </div>
 
-            {/* ADD BUTTON - Slimmer on Mobile */}
             {!isMaxReached ? (
               <button 
                 onClick={() => addRepeaterItem(question.key)}
@@ -217,8 +336,7 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
                  </p>
                </div>
             )}
-            
-            {question.min && items.length < question.min && (
+             {question.min && items.length < question.min && (
                <p className="text-center text-[10px] text-sira-orange mt-2 font-medium shrink-0">
                  * Required: Please add at least {question.min} entry.
                </p>
@@ -229,7 +347,6 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
     }
   };
 
-  // --- SECTION RENDERER ---
   if (currentQuestion && currentQuestion.type === 'section') {
     return (
       <div className="flex flex-col justify-center items-center h-full text-center px-4 py-8">
@@ -245,7 +362,6 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
     );
   }
 
-  // --- MAIN RENDERER ---
   return (
     <div className="relative flex flex-col h-full justify-between">
       <AnimatePresence mode="wait">
@@ -260,11 +376,9 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
             <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-sira-orange font-bold block mb-1 md:mb-2">
               Question {questionNumber}
             </span>
-            
             <h2 className="text-2xl md:text-3xl font-heading text-slate-900 mb-1 md:mb-2 leading-tight">
               {currentQuestion.label} {currentQuestion.required && <span className="text-sira-purple text-lg align-top">*</span>}
             </h2>
-            
             {currentQuestion.sub && (
               <p className="text-slate-400 text-xs md:text-sm mb-4 md:mb-6 leading-relaxed">
                 {currentQuestion.sub}
@@ -293,10 +407,8 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Footer */}
       <div className="flex items-center justify-between pt-4 md:pt-8 border-t border-slate-50 mt-3 md:mt-4 gap-3 shrink-0">
         <button onClick={handleBack} className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 py-2 px-2">Back</button>
-        
         <div className="flex gap-3">
             <button onClick={onExit} className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-red-300 hover:text-red-500 py-2 px-2">Exit</button>
             <button 

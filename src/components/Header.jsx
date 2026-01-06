@@ -37,8 +37,7 @@ export default function Header({
         
         {/* LOGO */}
         <div className="cursor-pointer flex items-baseline gap-2 group" onClick={onHome}>
-          <span className="text-xl font-heading text-slate-900 font-bold tracking-tight">Sira</span>
-          <span className="text-lg font-arabic text-slate-900/40">سيرة</span>
+          <span className="text-xl font-heading text-slate-900 font-bold tracking-tight">Portfiller</span>
         </div>
         
         <div className="flex items-center gap-8">

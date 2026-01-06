@@ -143,8 +143,8 @@ export const questionLibrary = {
       id: 'fullName',
       key: 'fullName',
       type: 'text',
-      label: 'Operator Name',
-      placeholder: 'e.g. Sarah Connor',
+       label: 'Full Name',
+      placeholder: 'Your Name',
       required: true,
     },
     {
@@ -158,9 +158,9 @@ export const questionLibrary = {
       id: 'bio',
       key: 'bio',
       type: 'textarea',
-      label: 'System Logs (Bio)',
-      placeholder: 'Initialize bio sequence...',
-      minLength: 20,
+      label: 'About Me',
+      placeholder: 'Tell us a bit about yourself...',
+      minLength: 30,
     },
     {
       id: 'projectsSection',
@@ -171,11 +171,11 @@ export const questionLibrary = {
       id: 'projects',
       key: 'projects',
       type: 'repeater',
-      label: 'Project Nodes',
+      label: 'Project Section',
       min: 1, // Minimum 1 required
       fields: [
         { key: 'name', label: 'Project Name', placeholder: 'e.g. Nexus API', required: true },
-        { key: 'image', label: 'Cover Image URL', placeholder: 'https://...', type: 'text' }, // NEW IMAGE FIELD
+        { key: 'image', label: 'Cover Image URL', placeholder: 'Upload an image', type: 'image',helper: 'Recommended: 1600x900px JPG or PNG' }, // NEW IMAGE FIELD
         { key: 'desc', label: 'Tech Stack / Desc', placeholder: 'React, Node, AI...', type: 'textarea' },
         { key: 'link', label: 'Live Link', placeholder: 'https://...', type: 'text' }
       ]
@@ -183,7 +183,7 @@ export const questionLibrary = {
     {
       id: 'contactSection',
       type: 'section',
-      label: 'Uplink',
+      label: 'Contact Section',
     },
     {
       id: 'contact',
@@ -191,7 +191,6 @@ export const questionLibrary = {
       type: 'repeater',
       label: 'Communication Channels',
       min: 1, // Minimum 1 required
-      max: 4,
       fields: [
         { 
           key: 'type', 
