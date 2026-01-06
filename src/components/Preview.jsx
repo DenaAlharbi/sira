@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import BasicFree from '../templates/BasicFree/Index';
-import ProjectFocus from '../templates/ProjectFocus/Index'; // <--- 1. IMPORT IT
-import Vanguard from '../templates/Vanguard/Index';
-const templateMap = {
-  'BasicFree': BasicFree,
-  'ProjectFocus': ProjectFocus, // <--- 2. MAP IT
-  'Vanguard': Vanguard
-
-};
+// --- 1. NEW IMPORT: Grab the helper from the registry ---
+import { getTemplateComponent } from '../templates/templateRegistry';
 
 export default function Preview({ form, onBack, onNext, isEditing }) {
   const [device, setDevice] = useState('mobile'); 
 
-  const SelectedTemplate = templateMap[form.templateId] || templateMap['BasicFree'];
+  // --- 2. USE THE HELPER: This now works because we imported it ---
+  const SelectedTemplate = getTemplateComponent(form.templateId);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start h-[calc(100vh-140px)]">

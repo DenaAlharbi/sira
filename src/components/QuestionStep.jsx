@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { questionLibrary } from '../data/questionLibrary';
+import { getTemplateQuestions } from '../templates/templateRegistry';
 import { supabase } from '../supabaseClient'; 
 
 export default function QuestionStep({ templateId, form, updateForm, onNext, onExit }) {
-  const questions = questionLibrary[templateId] || questionLibrary['BasicFree']; 
+const questions = getTemplateQuestions(templateId);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [error, setError] = useState(null);
   
