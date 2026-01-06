@@ -74,7 +74,7 @@ export default function Header({
     onClick={onOpenDashboard} 
     className="text-sira-purple hover:opacity-70 transition-all border-l border-slate-200 pl-8 animate-fadeIn"
   >
-    Test Dashboard
+    My Portfolios
   </button>
           </nav>
           

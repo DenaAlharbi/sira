@@ -67,7 +67,32 @@ const TemplateMiniature = ({ templateId }) => {
       </div>
     );
   }
-
+if (templateId === 'ProjectFocus') {
+    return (
+      <div className="w-full h-full relative bg-white overflow-hidden text-left">
+        <div className={scaleWrapperClass}>
+          <div className="p-16 flex flex-col h-full bg-slate-50">
+             {/* Header */}
+             <div className="bg-white p-12 rounded-b-[4rem] shadow-sm mb-12">
+               <h1 className="text-8xl font-bold mb-6">Dena</h1>
+               <p className="text-4xl text-slate-400">App Developer</p>
+             </div>
+             
+             {/* Grid */}
+             <div className="grid grid-cols-2 gap-8 px-8">
+               <div className="bg-white p-8 rounded-3xl border border-slate-200 h-64">
+                 <h3 className="text-4xl font-bold mb-4">Sira App</h3>
+                 <div className="w-full h-4 bg-slate-100 rounded-full"></div>
+               </div>
+               <div className="bg-white p-8 rounded-3xl border border-slate-200 h-64">
+                 <h3 className="text-4xl font-bold mb-4">Portfolio</h3>
+                 <div className="w-full h-4 bg-slate-100 rounded-full"></div>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    );}
   // 2. HERITAGE (Locked)
   if (templateId === 'Heritage') {
     return (
@@ -113,7 +138,13 @@ export default function Gallery({ onSelect }) {
       cat: 'Essential', 
       color: '#000000', 
       description: 'Clean, monochrome, and effective. The standard for professional clarity. (Free)' 
-    },
+    },{ 
+    id: 'ProjectFocus', 
+    name: 'The Maker', 
+    cat: 'Creative', 
+    color: '#334155', 
+    description: 'Grid layout focused entirely on your projects. (Free)' 
+  },
     { 
       id: 'Heritage', 
       name: 'Al-Majlis', 

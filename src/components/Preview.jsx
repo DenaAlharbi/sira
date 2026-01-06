@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import BasicFree from '../templates/BasicFree/Index';
-
+import ProjectFocus from '../templates/ProjectFocus/Index'; // <--- 1. IMPORT IT
 const templateMap = {
   'BasicFree': BasicFree,
+  'ProjectFocus': ProjectFocus, // <--- 2. MAP IT
 };
 
 export default function Preview({ form, onBack, onNext, isEditing }) {

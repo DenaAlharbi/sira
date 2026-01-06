@@ -16,6 +16,7 @@ import DashboardModal from './components/DashboardModal';
 
 // --- TEMPLATE IMPORTS ---
 import BasicFree from './templates/BasicFree/Index'; 
+import ProjectFocus from './templates/ProjectFocus/Index';
 
 // =======================================================
 // CONFIGURATION (THE RULEBOOK)
@@ -440,8 +441,7 @@ function EditorApp() {
                 // MOBILE FIXES: 
                 // 1. max-h-[85vh]: Prevents overlap with edges vertically
                 // 2. overflow-hidden flex flex-col: Scrolling happens INSIDE the box
-                className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh] md:h-auto"
-              >
+className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-y-auto flex flex-col max-h-[85vh] md:max-h-[90vh]"              >
                 <button onClick={handleHomeClick} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10">✕</button>
                 <QuestionStep 
                   templateId={selectedTemplate} 
