@@ -71,6 +71,7 @@ export default function ProjectFocus({ data }) {
                             View Project
                           </span>
 
+
                           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
                             <svg
                               width="14"
