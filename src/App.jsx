@@ -113,7 +113,8 @@ function PublicProfile() {
   if (!profile) return <div className="min-h-screen flex items-center justify-center text-slate-400 font-sans tracking-widest uppercase text-[10px]">404 | Portfolio Not Found</div>;
 
   if (profile.template_id === 'BasicFree') return <BasicFree data={profile.data} />;
-  
+  if (profile.template_id === 'ProjectFocus') return <ProjectFocus data={profile.data} />;
+  if (profile.template_id === 'Vanguard') return <Vanguard data={profile.data} />;
   return <div>Unknown Template: {profile.template_id}</div>;
 }
 
