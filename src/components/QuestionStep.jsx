@@ -4,12 +4,12 @@ import { getTemplateQuestions } from '../templates/templateRegistry';
 import { supabase } from '../supabaseClient'; 
 
 export default function QuestionStep({ templateId, form, updateForm, onNext, onExit }) {
-const questions = getTemplateQuestions(templateId);
+  const questions = getTemplateQuestions(templateId);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [error, setError] = useState(null);
   
-  // NEW: Track uploading state (which row is currently uploading?)
-  const [uploadingState, setUploadingState] = useState({}); // { "rowIndex-fieldKey": true/false }
+  // Track uploading state
+  const [uploadingState, setUploadingState] = useState({}); 
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -54,7 +54,7 @@ const questions = getTemplateQuestions(templateId);
     updateForm({ [fieldKey]: updatedItems });
   };
 
-// --- 1. IMAGE COMPRESSION HELPER (Add this above handleImageUpload) ---
+  // --- IMAGE COMPRESSION HELPER ---
   const compressImage = (file) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -64,7 +64,7 @@ const questions = getTemplateQuestions(templateId);
         img.src = event.target.result;
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1200; // Resize huge images to 1200px width
+          const MAX_WIDTH = 1200; 
           const scaleSize = MAX_WIDTH / img.width;
           canvas.width = MAX_WIDTH;
           canvas.height = img.height * scaleSize;
@@ -72,7 +72,6 @@ const questions = getTemplateQuestions(templateId);
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          // Compress to JPEG at 70% quality
           canvas.toBlob((blob) => {
             const compressedFile = new File([blob], file.name, {
               type: 'image/jpeg',
@@ -85,48 +84,64 @@ const questions = getTemplateQuestions(templateId);
     });
   };
 
-  // --- 2. UPDATED UPLOAD LOGIC ---
+  // --- REPEATER UPLOAD LOGIC ---
   const handleImageUpload = async (originalFile, index, fieldKey) => {
     try {
       if (!originalFile) return;
 
-      // Set Loading State
       const loaderKey = `${index}-${fieldKey}`;
       setUploadingState(prev => ({ ...prev, [loaderKey]: true }));
 
-      // A. COMPRESS THE IMAGE BEFORE UPLOADING
       const file = await compressImage(originalFile);
-
-      // B. Upload to Supabase (Now it's tiny!)
-      const fileExt = 'jpg'; // We converted it to jpeg
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `${fileName}`;
-
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+      
       const { error: uploadError } = await supabase.storage
         .from('portfolio-assets') 
-        .upload(filePath, file);
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      // C. Get the Public URL
       const { data } = supabase.storage
         .from('portfolio-assets')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
-      // D. Save URL to Form
       handleRepeaterChange(currentQuestion.key, index, fieldKey, data.publicUrl);
 
     } catch (error) {
       console.error(error);
-      alert('Upload failed: ' + (error.message || "Network Error. Try a smaller image."));
+      alert('Upload failed: ' + (error.message || "Network Error"));
     } finally {
-      // Clear Loading State
       const loaderKey = `${index}-${fieldKey}`;
       setUploadingState(prev => ({ ...prev, [loaderKey]: false }));
     }
   };
+
+  // --- SINGLE IMAGE UPLOAD LOGIC (For Headers) ---
+  const handleSingleImageUpload = async (originalFile) => {
+    try {
+      if (!originalFile) return;
+      const loaderKey = currentQuestion.key;
+      setUploadingState(prev => ({ ...prev, [loaderKey]: true }));
+      
+      const file = await compressImage(originalFile);
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+      
+      const { error: uploadError } = await supabase.storage.from('portfolio-assets').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      
+      const { data } = supabase.storage.from('portfolio-assets').getPublicUrl(fileName);
+      updateForm({ [currentQuestion.key]: data.publicUrl }); 
+      
+    } catch (error) {
+      alert('Upload failed: ' + error.message);
+    } finally {
+      setUploadingState(prev => ({ ...prev, [currentQuestion.key]: false }));
+    }
+  };
+
   // --- NAVIGATION & VALIDATION ---
   const handleNext = () => {
+    // Validation for Repeater
     if (currentQuestion.type === 'repeater') {
       const currentItems = form[currentQuestion.key] || [];
       if (currentQuestion.min && currentItems.length < currentQuestion.min) {
@@ -145,9 +160,10 @@ const questions = getTemplateQuestions(templateId);
       }
     }
 
-    if (['text', 'textarea'].includes(currentQuestion.type)) {
+    // Validation for Text/Textarea/Image
+    if (['text', 'textarea', 'image'].includes(currentQuestion.type)) {
        const value = form[currentQuestion.key] || '';
-       if (currentQuestion.required && value.trim() === '') {
+       if (currentQuestion.required && (!value || value.trim() === '')) {
          setError("This field is required.");
          return;
        }
@@ -207,6 +223,39 @@ const questions = getTemplateQuestions(templateId);
             )}
           </div>
         );
+
+      // --- THIS WAS MISSING IN YOUR CODE ---
+      case 'image':
+        return (
+          <div className="w-full">
+             <div className="flex items-center gap-6">
+                {/* Preview Box */}
+                {form[question.key] && (
+                  <div className="w-24 h-24 rounded-xl bg-slate-200 overflow-hidden border border-slate-300 shadow-sm shrink-0">
+                    <img src={form[question.key]} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                {/* Upload Button */}
+                <label className={`flex-1 cursor-pointer border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-white hover:border-sira-purple hover:text-sira-purple transition-all px-6 py-8 rounded-xl text-xs font-bold uppercase tracking-widest flex flex-col items-center justify-center gap-2 h-32 ${uploadingState[question.key] ? 'opacity-50 pointer-events-none' : ''}`}>
+                  {uploadingState[question.key] ? (
+                     <div className="flex flex-col items-center gap-2">
+                       <div className="w-5 h-5 border-2 border-sira-purple border-t-transparent rounded-full animate-spin"></div>
+                       <span>Uploading...</span>
+                     </div>
+                  ) : (
+                     <>
+                       <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                       <span>{form[question.key] ? 'Replace Image' : 'Click to Upload Image'}</span>
+                     </>
+                  )}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSingleImageUpload(e.target.files[0])} />
+                </label>
+             </div>
+             {question.helper && <p className="text-xs text-slate-400 mt-3 text-center">{question.helper}</p>}
+          </div>
+        );
+      // ------------------------------------
+
       case 'repeater':
         const items = form[question.key] || [];
         const isMaxReached = question.max && items.length >= question.max;
@@ -219,95 +268,72 @@ const questions = getTemplateQuestions(templateId);
                   <div className="grid grid-cols-1 gap-3 md:gap-4">
                     {question.fields.map((field) => (
                       <div key={field.key}>
-                        
-                        {/* ============================= */}
-                        {/* IMAGE UPLOAD RENDERER       */}
-                        {/* ============================= */}
                         {field.type === 'image' ? (
                           <div className="space-y-2">
                              <label className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-400 block mb-1 font-bold">
                                {field.label} {field.required && <span className="text-red-400">*</span>}
                              </label>
-                             
                              <div className="flex items-start gap-4">
-                               {/* PREVIEW BOX (Visible if image exists) */}
                                {item[field.key] && (
                                  <div className="w-20 h-20 rounded-lg bg-slate-200 overflow-hidden border border-slate-300 shadow-sm shrink-0">
-                                   <img 
-                                     src={item[field.key]} 
-                                     alt="Uploaded Preview" 
-                                     className="w-full h-full object-cover" 
-                                   />
+                                   <img src={item[field.key]} alt="Preview" className="w-full h-full object-cover" />
                                  </div>
                                )}
-
-                               {/* UPLOAD BUTTON */}
                                <div className="flex-1">
                                  <label className={`cursor-pointer border border-slate-200 bg-white hover:border-sira-purple hover:text-sira-purple transition-all px-4 py-4 rounded-xl text-xs font-bold uppercase tracking-widest flex flex-col items-center justify-center gap-2 w-full h-20 border-dashed ${uploadingState[`${index}-${field.key}`] ? 'opacity-50 pointer-events-none bg-slate-50' : ''}`}>
-                                   
-                                   {/* CONTENT: Loader vs Icon */}
                                    {uploadingState[`${index}-${field.key}`] ? (
-                                      <>
-                                        <div className="w-4 h-4 border-2 border-sira-purple border-t-transparent rounded-full animate-spin"></div>
-                                        <span>Uploading...</span>
-                                      </>
+                                     <>
+                                       <div className="w-4 h-4 border-2 border-sira-purple border-t-transparent rounded-full animate-spin"></div>
+                                       <span>Uploading...</span>
+                                     </>
                                    ) : (
-                                      <>
-                                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                                        <span>{item[field.key] ? 'Replace Image' : 'Click to Upload'}</span>
-                                      </>
+                                     <>
+                                       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                       <span>{item[field.key] ? 'Replace Image' : 'Click to Upload'}</span>
+                                     </>
                                    )}
-
-                                   <input 
-                                     type="file" 
-                                     accept="image/*" 
-                                     className="hidden" 
-                                     onChange={(e) => handleImageUpload(e.target.files[0], index, field.key)}
-                                   />
+                                   <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e.target.files[0], index, field.key)} />
                                  </label>
                                </div>
                              </div>
-                             {field.helper && <p className="text-[10px] text-slate-400 mt-1">{field.helper}</p>}
                           </div>
                         ) : (
-                          
-                        /* STANDARD INPUTS */
-                        <>
-                          <label className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-400 block mb-1 font-bold">
-                            {field.label} {field.required && <span className="text-red-400">*</span>}
-                          </label>
-                          
-                          {field.type === 'select' ? (
-                            <div className="relative">
-                              <select
-                                className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white appearance-none focus:border-sira-purple outline-none transition-colors"
+                          /* STANDARD INPUTS */
+                          <>
+                            <label className="text-[9px] md:text-[10px] uppercase tracking-widest text-slate-400 block mb-1 font-bold">
+                              {field.label} {field.required && <span className="text-red-400">*</span>}
+                            </label>
+                            {field.type === 'select' ? (
+                              <div className="relative">
+                                <select
+                                  className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white appearance-none focus:border-sira-purple outline-none transition-colors"
+                                  value={item[field.key] || ''}
+                                  onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
+                                >
+                                  <option value="" disabled>{field.placeholder || 'Select...'}</option>
+                                  {field.options.map((opt) => (
+                                    <option key={opt} value={opt}>{opt}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            ) : field.type === 'textarea' ? (
+                              <textarea
+                                rows={2}
+                                className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors resize-none"
+                                placeholder={field.placeholder}
                                 value={item[field.key] || ''}
                                 onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
-                              >
-                                <option value="" disabled>{field.placeholder || 'Select...'}</option>
-                                {field.options.map((opt) => (
-                                  <option key={opt} value={opt}>{opt}</option>
-                                ))}
-                              </select>
-                            </div>
-                          ) : field.type === 'textarea' ? (
-                            <textarea
-                              rows={2}
-                              className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors resize-none"
-                              placeholder={field.placeholder}
-                              value={item[field.key] || ''}
-                              onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
-                            />
-                          ) : (
-                            <input
-                              type="text"
-                              className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors"
-                              placeholder={field.placeholder}
-                              value={item[field.key] || ''}
-                              onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
-                            />
-                          )}
-                        </>
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                className="w-full p-2 md:p-3 text-sm border border-slate-200 rounded-md md:rounded-lg bg-white focus:border-sira-purple outline-none transition-colors"
+                                placeholder={field.placeholder}
+                                value={item[field.key] || ''}
+                                onChange={(e) => handleRepeaterChange(question.key, index, field.key, e.target.value)}
+                              />
+                            )}
+                          </>
                         )}
                       </div>
                     ))}

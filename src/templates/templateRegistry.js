@@ -10,6 +10,9 @@ import { config as VanguardConfig } from './Vanguard/config';
 
 import PastelFolio from './PastelFolio/Index';
 import { config as PastelFolioConfig } from './PastelFolio/config';
+
+import ImmersivePortfolio from './ImmersivePortfolio/Index';
+import { config as ImmersivePortfolioConfig } from './ImmersivePortfolio/config';
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -30,6 +33,11 @@ const REGISTRY_DATA = {
     'PastelFolio': {
         component: PastelFolio,
         config: PastelFolioConfig,
+        isPaid: true
+    }
+    ,'ImmersivePortfolio': {
+        component: ImmersivePortfolio,
+        config: ImmersivePortfolioConfig,
         isPaid: true
     }
 };

@@ -201,41 +201,42 @@ const TemplateMiniature = ({ templateId }) => {
       </div>
     );
   }
-  // 2. HERITAGE (Locked)
-  if (templateId === 'Heritage') {
-    return (
-      <div className="w-full h-full relative bg-[#F9F7F2] overflow-hidden">
-        <div className={`${scaleWrapperClass} bg-[#F9F7F2] flex flex-col items-center text-center border-[16px] border-double border-[#1B3022]/20 p-16`}>
-          <div className="w-40 h-40 rounded-full border-4 border-[#D4AF37] mb-12 flex items-center justify-center text-[#1B3022] font-serif font-bold text-6xl bg-[#1B3022]/5">
-            KA
-          </div>
-          <h1 className="text-8xl font-serif font-bold text-[#1B3022] mb-6">Khalid Al-Saud</h1>
-          <p className="text-4xl text-[#D4AF37] mb-16 font-serif italic">Executive Director</p>
-          <div className="w-48 h-[3px] bg-[#1B3022]/30 mb-16"></div>
-          <p className="text-3xl font-serif text-[#1B3022]/80 leading-loose max-w-4xl mx-auto mb-16">
-            "Leadership is not about being in charge. It is about taking care of those in your charge."
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. SWISS (Locked)
+  // 6. IMMERSIVE PORTFOLIO (The New Template)
+if (templateId === 'ImmersivePortfolio') {
   return (
-    <div className="w-full h-full relative bg-slate-50 overflow-hidden">
+    <div className="w-full h-full relative bg-white overflow-hidden text-left">
       <div className={scaleWrapperClass}>
-        <div className="p-16">
-           <h1 className="text-9xl font-bold tracking-tighter text-slate-900 mb-0">HELO.</h1>
-           <div className="grid grid-cols-2 gap-10 mt-24">
-               <div className="h-64 bg-slate-200"></div>
-               <div className="h-64 bg-slate-900"></div>
-           </div>
+        {/* Background Image Header */}
+        <div 
+          className="h-full w-full flex flex-col relative"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/40"></div>
+          
+          {/* Content */}
+          <div className="relative z-10 p-12 h-full flex flex-col justify-center text-white">
+            <p className="text-2xl font-light mb-0 opacity-80">I AM</p>
+            <h1 className="text-8xl font-black tracking-tighter uppercase leading-none mb-8">
+              MADISON
+            </h1>
+            <div className="w-full h-1 bg-yellow-400 mb-8"></div>
+            <h2 className="text-4xl font-bold uppercase text-right leading-tight opacity-90">
+              Digital<br/>Product<br/>Designer
+            </h2>
+          </div>
         </div>
       </div>
     </div>
   );
-};
+}
+}
 
+ 
 // --- MAIN GALLERY COMPONENT ---
 export default function Gallery({ onSelect }) {
   
@@ -270,6 +271,14 @@ export default function Gallery({ onSelect }) {
       description: 'Soft gradients and bold typography for designers.',
       price: '$199' // Optional if you want it to be paid
     },
+    {
+      id:'ImmersivePortfolio',
+      name: 'Immersive Portfolio',
+      cat: 'Creative',    
+      color: '#1E293B', // Slate-800
+      description: 'A visually striking portfolio template with full-screen header and project showcases.',
+      price: '$249' // Premium price
+    }
     
   ];
 
