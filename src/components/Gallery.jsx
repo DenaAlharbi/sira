@@ -253,14 +253,7 @@ export default function Gallery({ onSelect }) {
     color: '#334155', 
     description: 'Grid layout focused entirely on your projects. (Free)' 
   },
-    { 
-      id: 'Heritage', 
-      name: 'Al-Majlis', 
-      cat: 'Leadership', 
-      color: '#1B3022', 
-      description: 'Serif-heavy leadership layout.',
-      locked: true
-    },
+    
     { 
   id: 'Vanguard', 
   name: 'Vanguard', 
@@ -277,14 +270,7 @@ export default function Gallery({ onSelect }) {
       description: 'Soft gradients and bold typography for designers.',
       price: '$199' // Optional if you want it to be paid
     },
-    { 
-      id: 'Swiss', 
-      name: 'Structure v.01', 
-      cat: 'Engineering', 
-      color: '#111111', 
-      description: 'Bold geometry & storytelling.',
-      locked: true
-    }
+    
   ];
 
   return (
