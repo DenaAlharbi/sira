@@ -362,6 +362,31 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 9. GOLD NOIR
+  if (templateId === 'GoldNoir') {
+    return (
+      <div className="w-full h-full relative bg-[#050505] overflow-hidden text-center font-sans">
+        <div className={scaleWrapperClass}>
+          {/* Header */}
+          <div className="relative h-[60%] flex flex-col items-center justify-center p-8 bg-gradient-to-b from-[#1a1a1a] to-[#050505]">
+             <h1 className="text-5xl font-bold uppercase text-[#D4AF37] mb-4">Michael<br/>Soudrin</h1>
+             <div className="flex gap-3 mb-6">
+                <div className="w-8 h-8 rounded-full border border-[#D4AF37]"></div>
+                <div className="w-8 h-8 rounded-full border border-[#D4AF37]"></div>
+             </div>
+             {/* The Belt */}
+             <div className="w-[120%] h-8 bg-black border-y border-[#D4AF37]/50 transform -rotate-3 mb-4"></div>
+          </div>
+          
+          {/* Project Grid Preview */}
+          <div className="p-8 grid grid-cols-2 gap-4">
+             <div className="bg-[#111] border border-[#333] h-32 rounded-lg"></div>
+             <div className="bg-[#111] border border-[#333] h-32 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -421,6 +446,14 @@ export default function Gallery({ onSelect }) {
       color: '#000000', // Black
       description: 'Sleek and minimalist dark mode design, perfect for modern professionals.',
       price: '$299' // Premium price
+    },
+    {
+      id:'GoldNoir',
+      name: 'Gold Noir',
+      cat: 'Luxury',  
+      color: '#080808', // Deep Black
+      description: 'A luxurious dark-themed portfolio with gold accents for high-end professionals.',
+      price: '$349' // Premium price  
     }
   ];
 
