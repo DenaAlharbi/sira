@@ -1,9 +1,7 @@
 import React from 'react';
 
-export default function Vanguard({ data }) {
-  // --- ROBUST DATA HANDLING (Matches BasicFree logic) ---
-  // If 'data' is missing, we default to {} so the app never crashes.
-  // We also set default values for every field right here.
+// 1. Accept the isMobilePreview prop
+export default function Vanguard({ data, isMobilePreview = false }) {
   const {
     fullName = "Ghost Operator",
     title = "Specialist",
@@ -11,6 +9,13 @@ export default function Vanguard({ data }) {
     projects = [],
     contact = []
   } = data || {};
+
+  // 2. DYNAMIC GRID LOGIC
+  // If in Mobile Preview: Force 1 column.
+  // Otherwise: Use standard responsive classes (1 col on mobile, 2 on desktop).
+  const gridClasses = isMobilePreview 
+    ? "grid-cols-1 gap-8" 
+    : "grid-cols-1 md:grid-cols-2 gap-8 md:gap-12";
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden relative">
@@ -53,11 +58,11 @@ export default function Vanguard({ data }) {
              </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          {/* 3. USE THE DYNAMIC CLASS HERE */}
+          <div className={`grid ${gridClasses}`}>
             {projects && projects.length > 0 ? (
               projects.map((project, index) => {
                 const hasLink = project.link && project.link.trim() !== '';
-                // Fallback image logic handled gracefully
                 const bgImage = project.image || null;
 
                 return (
@@ -78,7 +83,6 @@ export default function Vanguard({ data }) {
                          </div>
                        )}
                        
-                       {/* Tech Overlay */}
                        <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-slate-950 to-transparent z-20 flex justify-between items-end">
                        </div>
                     </div>

@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-// --- 1. NEW IMPORT: Grab the helper from the registry ---
 import { getTemplateComponent } from '../templates/templateRegistry';
 
 export default function Preview({ form, onBack, onNext, isEditing }) {
   const [device, setDevice] = useState('mobile'); 
 
-  // --- 2. USE THE HELPER: This now works because we imported it ---
+  // Load the correct template component based on the ID
   const SelectedTemplate = getTemplateComponent(form.templateId);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start h-[calc(100vh-140px)]">
       
-      {/* LEFT PANEL: Controls */}
+      {/* --- LEFT PANEL: Controls --- */}
       <aside className="w-full lg:w-1/4 space-y-6 flex flex-col h-full">
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex-1 flex flex-col justify-between">
           <div>
-            {/* --- DYNAMIC HEADER LOGIC --- */}
             <h3 className="text-xl font-heading text-slate-900 mb-1">
               {isEditing ? 'Update Review' : 'Final Review'}
             </h3>
@@ -38,13 +36,12 @@ export default function Preview({ form, onBack, onNext, isEditing }) {
           </div>
 
           <div className="flex flex-col gap-3 mt-auto">
-            {/* --- DYNAMIC BUTTON LOGIC --- */}
             <button 
               onClick={onNext} 
               className={`w-full py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-xl active:scale-95 ${
                 isEditing 
-                ? 'bg-sira-purple text-white hover:bg-slate-900' // Purple for Updates
-                : 'bg-slate-900 text-white hover:bg-sira-purple' // Black for New Deploys
+                ? 'bg-sira-purple text-white hover:bg-slate-900' 
+                : 'bg-slate-900 text-white hover:bg-sira-purple'
               }`}
             >
               {isEditing ? 'Confirm & Update Deployment' : 'Confirm & Deploy'}
@@ -73,7 +70,7 @@ export default function Preview({ form, onBack, onNext, isEditing }) {
         </div>
       </aside>
 
-      {/* RIGHT PANEL: The Preview Area */}
+      {/* --- RIGHT PANEL: The Preview Area --- */}
       <div className="w-full lg:w-3/4 bg-[#Eef0f2] rounded-3xl border border-slate-200 h-full relative flex items-center justify-center p-4 shadow-inner z-0">
         
         {/* ================= DESKTOP FRAME ================= */}
@@ -90,12 +87,13 @@ export default function Preview({ form, onBack, onNext, isEditing }) {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto bg-white custom-scrollbar">
-               <SelectedTemplate data={form} />
+               {/* Desktop: isMobilePreview is false */}
+               <SelectedTemplate data={form} isMobilePreview={false} />
             </div>
           </div>
         )}
 
-        {/* ================= MOBILE FRAME (FIXED) ================= */}
+        {/* ================= MOBILE FRAME ================= */}
         {device === 'mobile' && (
           <div className="transform scale-[0.65] lg:scale-[0.70] xl:scale-[0.80] transition-transform duration-500 origin-center">
             
@@ -111,7 +109,7 @@ export default function Preview({ form, onBack, onNext, isEditing }) {
               {/* The Screen Area */}
               <div className="h-full w-full bg-white rounded-[42px] overflow-hidden relative flex flex-col">
                 
-                {/* STATUS BAR (Fixed at top, on top of scroll) */}
+                {/* STATUS BAR (Z-Index 50 ensures it floats ON TOP of your website) */}
                 <div className="absolute top-0 left-0 w-full h-[50px] z-50 flex justify-between items-center px-8 pt-2 text-white font-semibold text-[14px] pointer-events-none mix-blend-difference">
                   <span>9:41</span>
                   <div className="flex items-center gap-1.5">
@@ -120,17 +118,21 @@ export default function Preview({ form, onBack, onNext, isEditing }) {
                   </div>
                 </div>
 
-                {/* DYNAMIC ISLAND (Fixed) */}
+                {/* DYNAMIC ISLAND (Floats on top) */}
                 <div className="absolute top-[11px] left-1/2 -translate-x-1/2 h-[35px] w-[120px] bg-black rounded-[20px] z-50 pointer-events-none flex items-center justify-end pr-3">
                     <div className="w-3 h-3 rounded-full bg-[#111] shadow-inner"></div>
                 </div>
 
-                {/* SCROLLABLE CONTENT */}
-                <div className="flex-1 w-full overflow-y-auto custom-scrollbar pt-[50px] pb-[30px] bg-white">
-                  <SelectedTemplate data={form} />
+                {/* SCROLLABLE CONTENT - FIXED! */}
+                {/* Removed 'pt-[50px]' 'pb-[30px]' and 'bg-white'. */}
+                {/* Now the template fills the whole screen behind the notch. */}
+                <div className="flex-1 w-full overflow-y-auto custom-scrollbar">
+                  
+                  <SelectedTemplate data={form} isMobilePreview={true} />
+                  
                 </div>
 
-                {/* HOME INDICATOR (Fixed at bottom) */}
+                {/* HOME INDICATOR (Floats on top) */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[130px] h-[5px] bg-black rounded-full z-50 opacity-30"></div>
               
               </div>

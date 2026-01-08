@@ -1,8 +1,15 @@
 import React from "react";
 
-export default function ProjectFocus({ data }) {
-  // Professional, modern palette (Slate + Indigo/Violet)
+// 1. Accept the isMobilePreview prop
+export default function ProjectFocus({ data, isMobilePreview = false }) {
   const bgGradient = "from-slate-50 via-white to-indigo-50/50";
+
+  // 2. DYNAMIC GRID LOGIC
+  // If in Mobile Preview: Force 1 column.
+  // Otherwise: Use standard responsive classes (1 col on mobile, 2 on tablet, 3 on desktop).
+  const gridClasses = isMobilePreview
+    ? "grid-cols-1 gap-8" 
+    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10";
 
   return (
     <div
@@ -41,7 +48,8 @@ export default function ProjectFocus({ data }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          {/* 3. USE THE DYNAMIC CLASS HERE */}
+          <div className={`grid ${gridClasses}`}>
             {data.projects &&
               data.projects.map((project, index) => {
                 const hasLink = project.link && project.link.trim() !== "";
@@ -70,7 +78,6 @@ export default function ProjectFocus({ data }) {
                           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 group-hover:underline decoration-2 underline-offset-4">
                             View Project
                           </span>
-
 
                           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
                             <svg
