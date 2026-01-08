@@ -23,6 +23,9 @@ import { config as AppleStyleFolioDarkConfig } from './AppleStyleFolioDark/confi
 import { config as GoldNoirConfig } from './GoldNoir/config';
 import GoldNoir from './GoldNoir/Index';  
 
+import { config as VelvetGoldConfig } from './VelvetGold/config';
+import VelvetGold from './VelvetGold/Index';  
+
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -63,6 +66,10 @@ const REGISTRY_DATA = {
     'GoldNoir': {
         component: GoldNoir,
         config: GoldNoirConfig,
+        isPaid: true
+    },"VelvetGold": {
+        component: VelvetGold,
+        config: VelvetGoldConfig,
         isPaid: true
     }
 };

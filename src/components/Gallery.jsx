@@ -387,6 +387,36 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 10. VELVET GOLD (The New Template)
+  if (templateId === 'VelvetGold') {
+    return (
+      <div className="w-full h-full relative bg-[#FFF9E6] overflow-hidden text-left font-sans">
+        <div className={scaleWrapperClass}>
+          {/* Header */}
+          <div className="pt-20 px-12 pb-32">
+             <p className="text-xs font-bold tracking-[0.3em] mb-4 text-black/50">HELLO I'M</p>
+             <h1 className="text-7xl font-black uppercase text-black leading-[0.9] mb-4">Nasrullah<br/>Mansur</h1>
+             <div className="w-32 h-10 bg-[#0C0C2C] rounded mt-8"></div>
+          </div>
+          
+          {/* The Belt */}
+          <div className="h-16 bg-[#050505] w-full" style={{ clipPath: 'ellipse(75% 100% at 50% 100%)' }}></div>
+          
+          {/* Skills (White) */}
+          <div className="bg-white p-8 flex gap-2 flex-wrap justify-center">
+             <div className="border border-black/10 px-4 py-2 rounded-lg text-[10px] font-bold uppercase">React</div>
+             <div className="border border-black/10 px-4 py-2 rounded-lg text-[10px] font-bold uppercase">Node</div>
+          </div>
+
+          {/* Projects (Dark) */}
+          <div className="bg-[#08080A] p-8 pb-32 grid grid-cols-2 gap-6">
+             <div className="bg-white h-48 rounded-2xl"></div>
+             <div className="bg-white h-48 rounded-2xl"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -454,7 +484,15 @@ export default function Gallery({ onSelect }) {
       color: '#080808', // Deep Black
       description: 'A luxurious dark-themed portfolio with gold accents for high-end professionals.',
       price: '$349' // Premium price  
+    },{
+      id:'VelvetGold',
+      name: 'Velvet Gold',
+      cat: 'Luxury',  
+      color: '#FFF9E6', // Soft Gold
+      description: 'An elegant portfolio template with velvet textures and gold highlights.',
+      price: '$349' // Premium price
     }
+    
   ];
 
   return (
