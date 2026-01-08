@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getTemplateQuestions } from '../templates/templateRegistry';
-import { useImageUpload } from '../hooks/useImageUpload'; // 1. Import Hook
-import RepeaterField from './inputs/RepeaterField';       // 2. Import Component
+import { useImageUpload } from '../hooks/useImageUpload'; 
+import RepeaterField from './inputs/RepeaterField';       
 
 export default function QuestionStep({ templateId, form, updateForm, onNext, onExit }) {
   const questions = getTemplateQuestions(templateId);
@@ -81,6 +81,56 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
               {uploadingState[currentQuestion.key] ? <span>Uploading...</span> : <span>{value ? 'Replace Image' : 'Click to Upload'}</span>}
               <input type="file" accept="image/*" className="hidden" onChange={e => handleSingleUpload(e.target.files[0])} />
             </label>
+          </div>
+        );
+
+      case 'image-select':
+        return (
+          <div className="space-y-6">
+            {/* 1. The Presets Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              {currentQuestion.options?.map((optionUrl, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => updateForm({ [currentQuestion.key]: optionUrl })}
+                  className={`relative aspect-square rounded-2xl overflow-hidden border-2 transition-all ${
+                    value === optionUrl 
+                      ? 'border-sira-purple ring-2 ring-sira-purple/20 scale-95' 
+                      : 'border-slate-100 hover:border-sira-purple/50 hover:scale-105'
+                  }`}
+                >
+                  <img src={optionUrl} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
+                  
+                  {/* Selected Checkmark */}
+                  {value === optionUrl && (
+                    <div className="absolute inset-0 bg-sira-purple/20 flex items-center justify-center">
+                      <div className="bg-white text-sira-purple rounded-full p-1 shadow-sm">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>
+                      </div>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4">
+               <div className="h-px bg-slate-200 flex-1"></div>
+               <span className="text-[10px] uppercase text-slate-400 font-bold tracking-widest">OR</span>
+               <div className="h-px bg-slate-200 flex-1"></div>
+            </div>
+
+            {/* 2. The Upload Button */}
+            <div className="w-full">
+               <label className={`flex cursor-pointer border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-white hover:border-sira-purple transition-all px-6 py-6 rounded-xl text-xs font-bold uppercase tracking-widest items-center justify-center gap-3 ${uploadingState[currentQuestion.key] ? 'opacity-50 pointer-events-none' : ''}`}>
+                  {uploadingState[currentQuestion.key] ? (
+                     <span>Uploading...</span>
+                  ) : (
+                     <span>Upload Custom Photo</span>
+                  )}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSingleUpload(e.target.files[0])} />
+                </label>
+            </div>
           </div>
         );
 

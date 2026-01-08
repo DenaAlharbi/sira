@@ -13,6 +13,10 @@ import { config as PastelFolioConfig } from './PastelFolio/config';
 
 import ImmersivePortfolio from './ImmersivePortfolio/Index';
 import { config as ImmersivePortfolioConfig } from './ImmersivePortfolio/config';
+
+import AppleStyleFolio from './AppleStyleFolio/Index';  
+import { config as AppleStyleFolioConfig } from './AppleStyleFolio/config';
+
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -38,6 +42,11 @@ const REGISTRY_DATA = {
     ,'ImmersivePortfolio': {
         component: ImmersivePortfolio,
         config: ImmersivePortfolioConfig,
+        isPaid: true
+    }
+    ,'AppleStyleFolio': {
+        component: AppleStyleFolio,
+        config: AppleStyleFolioConfig,
         isPaid: true
     }
 };

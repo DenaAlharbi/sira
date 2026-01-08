@@ -265,6 +265,7 @@ export default function EditorPage() {
                 <h2 className="text-3xl md:text-5xl font-heading text-slate-900 mb-3 md:mb-4 tracking-tight">Premium Templates</h2>
                 <p className="text-slate-500 max-w-sm md:max-w-xl mx-auto text-xs md:text-base leading-relaxed">
                   Select a high-end architectural layout for your professional digital presence.
+                  Designed for the Kingdom's next generation of leaders.
                 </p>
               </div>
               <Gallery onSelect={(id) => { setSelectedTemplate(id); setView('questions'); }} />

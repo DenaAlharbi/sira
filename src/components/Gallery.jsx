@@ -234,6 +234,78 @@ if (templateId === 'ImmersivePortfolio') {
     </div>
   );
 }
+// 7. APPLE STYLE FOLIO (The New Template)
+  if (templateId === 'AppleStyleFolio') {
+    return (
+      <div className="w-full h-full relative bg-[#F5F5F7] overflow-hidden text-left font-sans">
+        <div className={scaleWrapperClass}>
+          {/* Centered Card Layout */}
+          <div className="w-full h-full flex justify-center p-12 bg-[#F5F5F7]">
+            <div className="w-full max-w-4xl bg-white rounded-[3rem] shadow-sm p-12 flex flex-col gap-12">
+              
+              {/* Header: Name Left, Image Right */}
+              <div className="flex justify-between items-center">
+                <div className="space-y-4">
+                  <h1 className="text-6xl font-semibold tracking-tight text-[#1D1D1F]">Brian Do</h1>
+                  <p className="text-2xl text-[#86868B] max-w-lg leading-relaxed">
+                    Product designer from Jakarta, ID. Currently designing at Rectangle.
+                  </p>
+                </div>
+                {/* Profile Image Placeholder */}
+                <div className="w-40 h-40 rounded-full bg-gray-200 border-4 border-white shadow-sm flex-shrink-0"></div>
+              </div>
+
+              {/* Projects Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-[#D1D1D6]"></div>
+                  <h2 className="text-2xl font-medium text-[#1D1D1F]">Projects</h2>
+                </div>
+                
+                {/* Project Item 1 */}
+                <div className="bg-[#FBFBFD] p-6 rounded-3xl flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-full bg-white shadow-sm"></div>
+                    <div>
+                      <div className="h-5 w-48 bg-gray-800 rounded mb-2"></div>
+                      <div className="h-4 w-32 bg-gray-400 rounded"></div>
+                    </div>
+                  </div>
+                  <div className="text-[#D1D1D6] text-4xl">›</div>
+                </div>
+
+                {/* Project Item 2 */}
+                <div className="bg-[#FBFBFD] p-6 rounded-3xl flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-full bg-white shadow-sm"></div>
+                    <div>
+                      <div className="h-5 w-40 bg-gray-800 rounded mb-2"></div>
+                      <div className="h-4 w-24 bg-gray-400 rounded"></div>
+                    </div>
+                  </div>
+                  <div className="text-[#D1D1D6] text-4xl">›</div>
+                </div>
+              </div>
+
+              {/* Contact Section */}
+              <div className="mt-auto bg-[#FBFBFD] p-6 rounded-3xl flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-[#D1D1D6]"></div>
+                    <h2 className="text-2xl font-medium text-[#1D1D1F]">Contact Me</h2>
+                 </div>
+                 <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-full bg-white shadow-sm"></div>
+                    <div className="w-12 h-12 rounded-full bg-white shadow-sm"></div>
+                    <div className="w-12 h-12 rounded-full bg-white shadow-sm"></div>
+                 </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -278,6 +350,14 @@ export default function Gallery({ onSelect }) {
       color: '#1E293B', // Slate-800
       description: 'A visually striking portfolio template with full-screen header and project showcases.',
       price: '$249' // Premium price
+    },
+    {
+      id:'AppleStyleFolio',
+      name: 'The Minimalist',
+      cat: 'Professional',
+      color: '#F5F5F7', // Light Gray
+      description: 'Sleek and minimalist design, perfect for modern professionals.',
+      price: '$299' // Premium price
     }
     
   ];
