@@ -17,6 +17,9 @@ import { config as ImmersivePortfolioConfig } from './ImmersivePortfolio/config'
 import AppleStyleFolio from './AppleStyleFolio/Index';  
 import { config as AppleStyleFolioConfig } from './AppleStyleFolio/config';
 
+import AppleStyleFolioDark from './AppleStyleFolioDark/Index';  
+import { config as AppleStyleFolioDarkConfig } from './AppleStyleFolioDark/config'; 
+
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -47,6 +50,11 @@ const REGISTRY_DATA = {
     ,'AppleStyleFolio': {
         component: AppleStyleFolio,
         config: AppleStyleFolioConfig,
+        isPaid: true
+    }
+    ,'AppleStyleFolioDark': {
+        component: AppleStyleFolioDark,
+        config: AppleStyleFolioDarkConfig,
         isPaid: true
     }
 };

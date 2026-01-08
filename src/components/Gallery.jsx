@@ -306,6 +306,62 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 8. APPLE STYLE DARK (New)
+  if (templateId === 'AppleStyleFolioDark') {
+    return (
+      <div className="w-full h-full relative bg-black overflow-hidden text-left font-sans">
+        <div className={scaleWrapperClass}>
+          <div className="w-full h-full flex justify-center p-12 bg-black">
+            {/* Card: Dark Gray #1C1C1E */}
+            <div className="w-full max-w-4xl bg-[#1C1C1E] rounded-[3rem] shadow-2xl p-12 flex flex-col gap-12 border border-white/10">
+              
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div className="space-y-4">
+                  <h1 className="text-6xl font-semibold tracking-tight text-white">Brian Do</h1>
+                  <p className="text-2xl text-[#98989D] max-w-lg leading-relaxed">
+                    Product designer from Jakarta.
+                  </p>
+                </div>
+                <div className="w-40 h-40 rounded-full bg-[#2C2C2E] border-4 border-[#2C2C2E] shadow-sm flex-shrink-0"></div>
+              </div>
+
+              {/* Projects */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-[#0A84FF]"></div>
+                  <h2 className="text-2xl font-medium text-white">Projects</h2>
+                </div>
+                
+                <div className="bg-[#2C2C2E] p-6 rounded-3xl flex items-center justify-between border border-white/5">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-full bg-[#1C1C1E] border border-white/10"></div>
+                    <div>
+                      <div className="h-5 w-48 bg-[#3A3A3C] rounded mb-2"></div>
+                      <div className="h-4 w-32 bg-[#3A3A3C] rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div className="mt-auto bg-[#2C2C2E] p-6 rounded-3xl flex items-center justify-between border border-white/5">
+                 <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-[#0A84FF]"></div>
+                    <h2 className="text-2xl font-medium text-white">Contact</h2>
+                 </div>
+                 <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#3A3A3C]"></div>
+                    <div className="w-12 h-12 rounded-full bg-[#3A3A3C]"></div>
+                 </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -358,8 +414,14 @@ export default function Gallery({ onSelect }) {
       color: '#F5F5F7', // Light Gray
       description: 'Sleek and minimalist design, perfect for modern professionals.',
       price: '$299' // Premium price
+    }, {
+      id:'AppleStyleFolioDark',
+      name: 'The Minimalist Dark',
+      cat: 'Professional',
+      color: '#000000', // Black
+      description: 'Sleek and minimalist dark mode design, perfect for modern professionals.',
+      price: '$299' // Premium price
     }
-    
   ];
 
   return (
