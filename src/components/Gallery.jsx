@@ -447,7 +447,85 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
-}
+  // 12. LAVENDER EXECUTIVE
+  if (templateId === 'LavenderExecutive') {
+    return (
+      <div className="w-full h-full relative bg-[#F3E5F5] overflow-hidden font-sans flex items-center justify-center">
+        <div className={scaleWrapperClass}>
+          
+          {/* The White "Executive" Card */}
+          <div className="w-[600px] bg-white rounded-[3rem] shadow-2xl p-12 flex flex-col gap-8">
+            
+            {/* Header Section */}
+            <div className="flex justify-between items-start gap-8">
+               <div className="space-y-4 flex-1">
+                  <div className="text-xs font-bold uppercase tracking-widest text-gray-400">Strategic Advisor</div>
+                  <h1 className="text-5xl font-bold text-[#1A1A1A] leading-tight">Alexandra<br/>Chen</h1>
+                  <div className="w-16 h-1.5 bg-[#6A1B9A] rounded-full"></div>
+                  <div className="h-2 w-full bg-gray-100 rounded mt-2"></div>
+                  <div className="h-2 w-2/3 bg-gray-100 rounded"></div>
+               </div>
+               
+               {/* Profile Photo Placeholder */}
+               <div className="w-32 h-32 bg-gray-200 rounded-3xl shrink-0"></div>
+            </div>
+
+            <hr className="border-gray-100" />
+
+            {/* Impact Section Preview */}
+            <div className="grid grid-cols-2 gap-8">
+               <div>
+                  <div className="text-2xl font-bold text-[#6A1B9A] mb-1">$15M+</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase">Revenue Growth</div>
+               </div>
+               <div>
+                  <div className="text-2xl font-bold text-[#6A1B9A] mb-1">200%</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase">Efficiency Scale</div>
+               </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+// 13. DARK PRODUCT FOLIO
+  if (templateId === 'DarkProductFolio') {
+    return (
+      <div className="w-full h-full bg-[#111111] p-8 overflow-hidden font-sans flex items-center justify-center">
+        <div className={scaleWrapperClass}>
+           <div className="w-[800px] grid grid-cols-12 gap-8">
+              
+              {/* Left ID Card */}
+              <div className="col-span-4">
+                 <div className="bg-white rounded-[1.5rem] p-4 pb-8 text-center relative">
+                    <div className="bg-[#D66A45] h-24 rounded-xl w-full mb-4"></div>
+                    <div className="w-24 h-24 bg-[#333] rounded-xl mx-auto -mt-16 relative z-10 border-4 border-white"></div>
+                    <div className="h-4 w-32 bg-black/80 mx-auto mt-4 rounded"></div>
+                    <div className="h-2 w-20 bg-gray-300 mx-auto mt-2 rounded"></div>
+                 </div>
+              </div>
+
+              {/* Right Content */}
+              <div className="col-span-8 pt-4">
+                 <h1 className="text-6xl font-black text-white uppercase leading-[0.8]">Product<br/><span className="text-[#333]" style={{WebkitTextStroke: '1px #555'}}>Designer</span></h1>
+                 
+                 <div className="flex gap-4 mt-8 mb-8">
+                    <div className="text-3xl font-bold text-white">+12</div>
+                    <div className="text-3xl font-bold text-white">+46</div>
+                 </div>
+
+                 <div className="flex gap-4">
+                    <div className="bg-[#D66A45] w-32 h-24 rounded-lg"></div>
+                    <div className="bg-[#D1F269] w-32 h-24 rounded-lg"></div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+    );
+  }}
 
  
 // --- MAIN GALLERY COMPONENT ---
@@ -528,6 +606,20 @@ export default function Gallery({ onSelect }) {
       color: '#FFFBF0', // Light Cream
       description: 'A vibrant and playful design with colorful accents for creative professionals.',
       price: '$199' // Premium price  
+      },{
+      id:'LavenderExecutive',
+      name: 'Lavender Executive', 
+      cat: 'Professional',    
+      color: '#F3E5F5', // Soft Lavender
+      description: 'A sophisticated portfolio with lavender tones for executives and consultants.',
+      price: '$299' // Premium price
+      },{
+id:'DarkProductFolio',
+name: 'Dark Product Folio', 
+cat: 'Technical',    
+color: '#111111', // Dark Gray
+description: 'A modern dark-themed portfolio designed for product designers and tech leads.',
+price: '$299' // Premium price
       }
     
   ];

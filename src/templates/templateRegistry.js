@@ -28,6 +28,12 @@ import VelvetGold from './VelvetGold/Index';
 
 import { config as PlayfulCanvasConfig } from './PlayfulCanvas/config';
 import PlayfulCanvas from './PlayfulCanvas/Index';
+
+import {config as LavenderExecutiveConfig} from './LavenderExecutive/config';
+import LavenderExecutive from './LavenderExecutive/Index';  
+
+import DarkProductFolio from './DarkProductFolio/Index';
+import {config as DarkProductFolioConfig} from './DarkProductFolio/config';
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -77,6 +83,14 @@ const REGISTRY_DATA = {
     'playfulCanvas': {
         component: PlayfulCanvas,
         config: PlayfulCanvasConfig,
+        isPaid: true
+    },'LavenderExecutive': {
+        component: LavenderExecutive,
+        config: LavenderExecutiveConfig,
+        isPaid: true
+    }, 'DarkProductFolio': {
+        component: DarkProductFolio,
+        config: DarkProductFolioConfig,
         isPaid: true
     }
 };
