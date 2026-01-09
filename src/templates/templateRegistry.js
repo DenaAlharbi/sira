@@ -26,6 +26,8 @@ import GoldNoir from './GoldNoir/Index';
 import { config as VelvetGoldConfig } from './VelvetGold/config';
 import VelvetGold from './VelvetGold/Index';  
 
+import { config as PlayfulCanvasConfig } from './PlayfulCanvas/config';
+import PlayfulCanvas from './PlayfulCanvas/Index';
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -70,6 +72,11 @@ const REGISTRY_DATA = {
     },"VelvetGold": {
         component: VelvetGold,
         config: VelvetGoldConfig,
+        isPaid: true
+    },
+    'playfulCanvas': {
+        component: PlayfulCanvas,
+        config: PlayfulCanvasConfig,
         isPaid: true
     }
 };

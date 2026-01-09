@@ -417,6 +417,36 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 11. PLAYFUL CANVAS
+  if (templateId === 'PlayfulCanvas') {
+    return (
+      <div className="w-full h-full bg-[#F3F0E7] p-8 overflow-hidden font-sans flex flex-col items-center">
+        <div className={scaleWrapperClass}>
+           {/* Green Card */}
+           <div className="bg-[#D1F2C6] rounded-[2rem] p-8 mb-6 h-48 flex items-center relative border border-black/5">
+              <div className="w-2/3">
+                 <div className="h-4 bg-black/10 rounded w-full mb-2"></div>
+                 <div className="h-4 bg-black/10 rounded w-3/4 mb-2"></div>
+                 <div className="flex gap-2">
+                    <div className="h-4 w-12 bg-[#FFD66E] rounded -rotate-2"></div>
+                    <div className="h-4 w-16 bg-[#F48B57] rounded rotate-1"></div>
+                 </div>
+              </div>
+              <div className="absolute right-4 top-4 w-24 h-24 bg-white rounded-full opacity-50"></div>
+           </div>
+
+           {/* Brand Name */}
+           <h1 className="text-6xl font-black text-[#1A1A1A] mb-8">Sinqlo</h1>
+
+           {/* Project Cards */}
+           <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-2xl h-32 border border-black/5"></div>
+              <div className="bg-white rounded-2xl h-32 border border-black/5"></div>
+           </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -491,7 +521,14 @@ export default function Gallery({ onSelect }) {
       color: '#FFF9E6', // Soft Gold
       description: 'An elegant portfolio template with velvet textures and gold highlights.',
       price: '$349' // Premium price
-    }
+    },{
+      id:'playfulCanvas',
+      name: 'Playful Canvas', 
+      cat: 'Creative',  
+      color: '#FFFBF0', // Light Cream
+      description: 'A vibrant and playful design with colorful accents for creative professionals.',
+      price: '$199' // Premium price  
+      }
     
   ];
 
