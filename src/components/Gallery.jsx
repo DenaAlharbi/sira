@@ -603,6 +603,53 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 16. MODERN SPLIT FOLIO
+  // 17. DARK DEV CORAL
+  if (templateId === 'DarkDevCoral') {
+    return (
+      <div className="w-full h-full bg-[#161821] p-4 font-sans overflow-hidden relative">
+        {/* Navbar */}
+        <div className="flex justify-between items-center mb-6">
+           <div className="w-10 h-2 bg-white rounded-full opacity-20"></div>
+           <div className="w-20 h-1 bg-white rounded-full opacity-10"></div>
+        </div>
+        
+        {/* Hero */}
+        <div className="mb-8">
+           <div className="w-16 h-2 bg-white rounded mb-2"></div>
+           <div className="w-32 h-4 bg-white rounded mb-4"></div>
+           <div className="w-16 h-5 bg-[#FF6B6B] rounded-sm"></div>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-2 gap-2">
+           <div className="bg-[#1E212D] h-12 rounded-sm p-2">
+              <div className="w-2 h-2 rounded-full bg-[#FF6B6B] mb-1"></div>
+              <div className="w-8 h-1 bg-gray-500 rounded"></div>
+           </div>
+           <div className="bg-[#1E212D] h-12 rounded-sm p-2">
+              <div className="w-2 h-2 rounded-full bg-[#FF6B6B] mb-1"></div>
+              <div className="w-8 h-1 bg-gray-500 rounded"></div>
+           </div>
+           <div className="bg-[#1E212D] h-12 rounded-sm p-2">
+              <div className="w-2 h-2 rounded-full bg-[#FF6B6B] mb-1"></div>
+              <div className="w-8 h-1 bg-gray-500 rounded"></div>
+           </div>
+           <div className="bg-[#1E212D] h-12 rounded-sm p-2">
+              <div className="w-2 h-2 rounded-full bg-[#FF6B6B] mb-1"></div>
+              <div className="w-8 h-1 bg-gray-500 rounded"></div>
+           </div>
+        </div>
+
+        {/* Decorative Line */}
+        <div className="absolute right-2 top-10 bottom-10 w-px bg-gray-700 flex flex-col items-center justify-between py-2">
+           <div className="w-1.5 h-1.5 bg-[#FF6B6B] rounded-full"></div>
+           <div className="w-1.5 h-1.5 border border-gray-500 rounded-full"></div>
+           <div className="w-1.5 h-1.5 bg-[#FF6B6B] rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -713,6 +760,13 @@ price: '$299' // Premium price
         description: 'A unique split-layout portfolio with a sidebar for easy navigation.',
         price: '$299' // Premium price
 
+      },{
+        id:'DarkDevCoral',
+        name: 'Dark Dev Coral', 
+        cat: 'Professional',    
+        color: '#1a1a1a', // Dark Gray  
+        description: 'A sleek dark-themed portfolio with coral accents for developers and tech professionals.',
+        price: '$299' // Premium price
       }
     
   ];

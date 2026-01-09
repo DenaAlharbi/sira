@@ -29,6 +29,7 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
 
   // --- HANDLERS ---
   const handleSingleUpload = async (file) => {
+    // This handles both Images and PDFs (Resume)
     const url = await uploadImage(file, currentQuestion.key);
     if (url) updateForm({ [currentQuestion.key]: url });
   };
@@ -73,6 +74,57 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
       case 'textarea':
         return <textarea autoFocus rows={4} className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 resize-none" placeholder={currentQuestion.placeholder} value={value} onChange={e => updateForm({ [currentQuestion.key]: e.target.value })} />;
       
+      // --- ADDED: SELECT SUPPORT (For Social Platforms) ---
+      case 'select':
+        return (
+          <div className="relative">
+            <select 
+              className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 appearance-none cursor-pointer"
+              value={value} 
+              onChange={e => updateForm({ [currentQuestion.key]: e.target.value })}
+            >
+              <option value="" disabled>Select an option...</option>
+              {currentQuestion.options?.map((opt, idx) => (
+                <option key={idx} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              ▼
+            </div>
+          </div>
+        );
+
+      // --- ADDED: FILE SUPPORT (For Resume PDF) ---
+      case 'file':
+        return (
+          <div className="w-full">
+            <div className="flex items-center gap-4 mb-4">
+               {value ? (
+                 <div className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-bold flex items-center gap-2">
+                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                   File Uploaded
+                 </div>
+               ) : (
+                 <div className="px-4 py-2 bg-slate-50 text-slate-400 rounded-lg text-sm font-bold">No file chosen</div>
+               )}
+            </div>
+            
+            <label className={`flex cursor-pointer border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-white hover:border-sira-purple transition-all px-6 py-10 rounded-xl flex-col items-center justify-center gap-3 ${uploadingState[currentQuestion.key] ? 'opacity-50' : ''}`}>
+              {uploadingState[currentQuestion.key] ? (
+                <span>Uploading...</span>
+              ) : (
+                <>
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-400"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                   <span className="font-bold text-slate-600 uppercase tracking-widest text-xs">
+                     {value ? 'Replace File' : 'Upload PDF'}
+                   </span>
+                </>
+              )}
+              <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={e => handleSingleUpload(e.target.files[0])} />
+            </label>
+          </div>
+        );
+
       case 'image':
         return (
           <div className="w-full flex items-center gap-6">

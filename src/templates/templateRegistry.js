@@ -20,26 +20,32 @@ import { config as AppleStyleFolioConfig } from './AppleStyleFolio/config';
 import AppleStyleFolioDark from './AppleStyleFolioDark/Index';  
 import { config as AppleStyleFolioDarkConfig } from './AppleStyleFolioDark/config'; 
 
-import { config as GoldNoirConfig } from './GoldNoir/config';
 import GoldNoir from './GoldNoir/Index';  
+import { config as GoldNoirConfig } from './GoldNoir/config';
 
-import { config as VelvetGoldConfig } from './VelvetGold/config';
 import VelvetGold from './VelvetGold/Index';  
+import { config as VelvetGoldConfig } from './VelvetGold/config';
 
-import { config as PlayfulCanvasConfig } from './PlayfulCanvas/config';
 import PlayfulCanvas from './PlayfulCanvas/Index';
+import { config as PlayfulCanvasConfig } from './PlayfulCanvas/config';
 
-import {config as LavenderExecutiveConfig} from './LavenderExecutive/config';
 import LavenderExecutive from './LavenderExecutive/Index';  
+import { config as LavenderExecutiveConfig } from './LavenderExecutive/config';
 
 import DarkProductFolio from './DarkProductFolio/Index';
-import {config as DarkProductFolioConfig} from './DarkProductFolio/config';
+import { config as DarkProductFolioConfig } from './DarkProductFolio/config';
 
 import LuxGalleria from './LuxGalleria/Index';
-import {config as LuxGalleriaConfig} from './LuxGalleria/config';
+import { config as LuxGalleriaConfig } from './LuxGalleria/config';
 
 import SplitSidebarPortfolio from './SplitSidebarPortfolio/Index';
 import { config as SplitSidebarPortfolioConfig } from './SplitSidebarPortfolio/config';
+
+import DarkDevCoral from './DarkDevCoral/Index';
+// FIX: Renamed alias to avoid duplicate identifier
+import { config as DarkDevCoralConfig } from './DarkDevCoral/config'; 
+
+
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -57,56 +63,66 @@ const REGISTRY_DATA = {
      config: VanguardConfig, 
      isPaid: true 
   },
-    'PastelFolio': {
-        component: PastelFolio,
-        config: PastelFolioConfig,
-        isPaid: true
-    }
-    ,'ImmersivePortfolio': {
-        component: ImmersivePortfolio,
-        config: ImmersivePortfolioConfig,
-        isPaid: true
-    }
-    ,'AppleStyleFolio': {
-        component: AppleStyleFolio,
-        config: AppleStyleFolioConfig,
-        isPaid: true
-    }
-    ,'AppleStyleFolioDark': {
-        component: AppleStyleFolioDark,
-        config: AppleStyleFolioDarkConfig,
-        isPaid: true
-    },
-    'GoldNoir': {
-        component: GoldNoir,
-        config: GoldNoirConfig,
-        isPaid: true
-    },"VelvetGold": {
-        component: VelvetGold,
-        config: VelvetGoldConfig,
-        isPaid: true
-    },
-    'playfulCanvas': {
-        component: PlayfulCanvas,
-        config: PlayfulCanvasConfig,
-        isPaid: true
-    },'LavenderExecutive': {
-        component: LavenderExecutive,
-        config: LavenderExecutiveConfig,
-        isPaid: true
-    }, 'DarkProductFolio': {
-        component: DarkProductFolio,
-        config: DarkProductFolioConfig,
-        isPaid: true
-    },'LuxGalleria': {
-        component: LuxGalleria,
-        config: LuxGalleriaConfig,
-        isPaid: true
-    },'SplitSidebarPortfolio': {
-        component: SplitSidebarPortfolio,
-        config: SplitSidebarPortfolioConfig,
-        isPaid: true
-    }
+  'PastelFolio': {
+     component: PastelFolio,
+     config: PastelFolioConfig,
+     isPaid: true
+  },
+  'ImmersivePortfolio': {
+     component: ImmersivePortfolio,
+     config: ImmersivePortfolioConfig,
+     isPaid: true
+  },
+  'AppleStyleFolio': {
+     component: AppleStyleFolio,
+     config: AppleStyleFolioConfig,
+     isPaid: true
+  },
+  'AppleStyleFolioDark': {
+     component: AppleStyleFolioDark,
+     config: AppleStyleFolioDarkConfig,
+     isPaid: true
+  },
+  'GoldNoir': {
+     component: GoldNoir,
+     config: GoldNoirConfig,
+     isPaid: true
+  },
+  'VelvetGold': {
+     component: VelvetGold,
+     config: VelvetGoldConfig,
+     isPaid: true
+  },
+  'playfulCanvas': {
+     component: PlayfulCanvas,
+     config: PlayfulCanvasConfig,
+     isPaid: true
+  },
+  'LavenderExecutive': {
+     component: LavenderExecutive,
+     config: LavenderExecutiveConfig,
+     isPaid: true
+  }, 
+  'DarkProductFolio': {
+     component: DarkProductFolio,
+     config: DarkProductFolioConfig,
+     isPaid: true
+  },
+  'LuxGalleria': {
+     component: LuxGalleria,
+     config: LuxGalleriaConfig,
+     isPaid: true
+  },
+  'SplitSidebarPortfolio': {
+     component: SplitSidebarPortfolio,
+     config: SplitSidebarPortfolioConfig,
+     isPaid: true
+  }, 
+  'DarkDevCoral': {
+     component: DarkDevCoral,
+     config: DarkDevCoralConfig, // FIX: Use the correct config name
+     isPaid: true
+  }
 };
 
 // --- HELPERS ---
@@ -117,7 +133,7 @@ export const getTemplateComponent = (id) => {
   return entry.component;
 };
 
-// Helper 2: Get Questions (For the Editor) <--- NEW
+// Helper 2: Get Questions (For the Editor)
 export const getTemplateQuestions = (id) => {
   const entry = REGISTRY_DATA[id] || REGISTRY_DATA['BasicFree'];
   return entry.config;
