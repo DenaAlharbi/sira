@@ -45,6 +45,10 @@ import DarkDevCoral from './DarkDevCoral/Index';
 // FIX: Renamed alias to avoid duplicate identifier
 import { config as DarkDevCoralConfig } from './DarkDevCoral/config'; 
 
+import MidnightTeal from './MidnightTeal/Index';
+import { config as MidnightTealConfig } from './MidnightTeal/config';
+
+
 
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
@@ -122,7 +126,12 @@ const REGISTRY_DATA = {
      component: DarkDevCoral,
      config: DarkDevCoralConfig, // FIX: Use the correct config name
      isPaid: true
-  }
+  },
+  'MidnightTeal': {
+     component: MidnightTeal,
+     config: MidnightTealConfig,
+     isPaid: true
+  },
 };
 
 // --- HELPERS ---

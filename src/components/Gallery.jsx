@@ -650,6 +650,66 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 18. MIDNIGHT TEAL
+  if (templateId === 'MidnightTeal') {
+    return (
+      <div className="w-full h-full bg-[#0F172A] p-4 font-sans overflow-hidden relative flex flex-col">
+        {/* Navbar */}
+        <div className="flex justify-between items-center mb-4">
+           <div className="w-12 h-2 bg-[#2DD4BF] rounded-full"></div>
+           <div className="flex gap-1">
+              <div className="w-6 h-1 bg-slate-700 rounded-full"></div>
+              <div className="w-6 h-1 bg-slate-700 rounded-full"></div>
+           </div>
+        </div>
+
+        {/* Hero Area */}
+        <div className="mb-6 w-3/4">
+           <div className="w-10 h-1 bg-slate-500 rounded mb-1"></div>
+           <div className="w-24 h-3 bg-white rounded mb-2"></div>
+           <div className="w-32 h-1 bg-slate-600 rounded mb-3"></div>
+           <div className="w-12 h-3 bg-[#2DD4BF] rounded-sm"></div>
+        </div>
+
+        {/* Right Sidebar (Timeline Dots) */}
+        <div className="absolute right-3 top-12 bottom-4 flex flex-col items-center gap-1 z-10">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#2DD4BF] shadow-[0_0_5px_#2DD4BF]"></div>
+            <div className="w-px h-6 bg-slate-700"></div>
+            <div className="w-1.5 h-1.5 rounded-full border border-slate-600"></div>
+            <div className="w-px h-6 bg-slate-700"></div>
+            <div className="w-1.5 h-1.5 rounded-full border border-slate-600"></div>
+        </div>
+
+        {/* Skills Grid */}
+        <div className="grid grid-cols-3 gap-2 mb-4 w-3/4">
+           {[1,2,3].map(i => (
+             <div key={i} className="bg-[#1E293B] h-10 rounded-sm p-1.5 border border-slate-800">
+                <div className="w-2 h-2 rounded-full bg-[#2DD4BF] mb-1.5"></div>
+                <div className="w-8 h-1 bg-slate-500 rounded"></div>
+             </div>
+           ))}
+        </div>
+
+        {/* Projects Grid (The differentiator) */}
+        <div className="grid grid-cols-2 gap-2 w-3/4">
+           <div className="bg-[#1E293B] h-14 rounded-sm border border-slate-800 relative overflow-hidden flex flex-col">
+              <div className="h-1/2 bg-slate-900/50"></div>
+              <div className="p-1.5">
+                 <div className="w-10 h-1 bg-white rounded mb-1"></div>
+                 <div className="w-6 h-1 bg-[#2DD4BF] rounded"></div>
+              </div>
+           </div>
+           <div className="bg-[#1E293B] h-14 rounded-sm border border-slate-800 relative overflow-hidden flex flex-col">
+              <div className="h-1/2 bg-slate-900/50"></div>
+              <div className="p-1.5">
+                 <div className="w-10 h-1 bg-white rounded mb-1"></div>
+                 <div className="w-6 h-1 bg-[#2DD4BF] rounded"></div>
+              </div>
+           </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -766,6 +826,14 @@ price: '$299' // Premium price
         cat: 'Professional',    
         color: '#1a1a1a', // Dark Gray  
         description: 'A sleek dark-themed portfolio with coral accents for developers and tech professionals.',
+        price: '$299' // Premium price
+      },{
+        id:'MidnightTeal',
+        name: 'Midnight Teal', 
+        cat: 'Technical',
+
+        color: '#0F172A', // Dark Blue  
+        description: 'A modern dark-themed portfolio with teal highlights for technical professionals.',
         price: '$299' // Premium price
       }
     
