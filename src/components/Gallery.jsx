@@ -710,6 +710,83 @@ if (templateId === 'ImmersivePortfolio') {
       </div>
     );
   }
+  // 19. TIMELINE FOLIO
+  if (templateId === 'TimelineFolio') {
+    return (
+      <div className="w-full h-full bg-[#1a1a1a] p-4 flex flex-col items-center justify-center relative overflow-hidden font-sans">
+        
+        {/* Title */}
+        <div className="w-32 h-2 bg-white rounded-full mb-6 opacity-80"></div>
+
+        {/* Timeline Container */}
+        <div className="relative w-full h-full flex justify-center">
+           
+           {/* Central Line */}
+           <div className="absolute top-0 bottom-0 w-0.5 bg-gray-600"></div>
+
+           <div className="w-full max-w-[200px] space-y-2 relative z-10">
+              
+              {/* Item 1 (Left - Yellow) */}
+              <div className="flex items-center w-full">
+                 <div className="w-[45%] bg-[#F2C94C] p-1.5 rounded-l-md rounded-r-none text-[4px] text-white shadow-md">
+                    <div className="w-8 h-1 bg-white/50 rounded mb-1"></div>
+                    <div className="w-full h-0.5 bg-white/30 rounded"></div>
+                 </div>
+                 {/* Connector */}
+                 <div className="w-[10%] flex justify-center items-center relative">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] border border-[#F2C94C] z-20"></div>
+                    <div className="absolute right-1/2 w-full h-px bg-gray-600"></div>
+                 </div>
+                 <div className="w-[45%]"></div>
+              </div>
+
+              {/* Item 2 (Right - Red) */}
+              <div className="flex items-center w-full">
+                 <div className="w-[45%]"></div>
+                 {/* Connector */}
+                 <div className="w-[10%] flex justify-center items-center relative">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] border border-[#EB5757] z-20"></div>
+                    <div className="absolute left-1/2 w-full h-px bg-gray-600"></div>
+                 </div>
+                 <div className="w-[45%] bg-[#EB5757] p-1.5 rounded-r-md rounded-l-none text-[4px] text-white shadow-md">
+                    <div className="w-8 h-1 bg-white/50 rounded mb-1"></div>
+                    <div className="w-full h-0.5 bg-white/30 rounded"></div>
+                 </div>
+              </div>
+
+              {/* Item 3 (Left - Green) */}
+              <div className="flex items-center w-full">
+                 <div className="w-[45%] bg-[#6FCF97] p-1.5 rounded-l-md rounded-r-none text-[4px] text-white shadow-md">
+                    <div className="w-8 h-1 bg-white/50 rounded mb-1"></div>
+                    <div className="w-full h-0.5 bg-white/30 rounded"></div>
+                 </div>
+                 {/* Connector */}
+                 <div className="w-[10%] flex justify-center items-center relative">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] border border-[#6FCF97] z-20"></div>
+                    <div className="absolute right-1/2 w-full h-px bg-gray-600"></div>
+                 </div>
+                 <div className="w-[45%]"></div>
+              </div>
+
+              {/* Item 4 (Right - Blue) */}
+              <div className="flex items-center w-full">
+                 <div className="w-[45%]"></div>
+                 {/* Connector */}
+                 <div className="w-[10%] flex justify-center items-center relative">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] border border-[#2F80ED] z-20"></div>
+                    <div className="absolute left-1/2 w-full h-px bg-gray-600"></div>
+                 </div>
+                 <div className="w-[45%] bg-[#2F80ED] p-1.5 rounded-r-md rounded-l-none text-[4px] text-white shadow-md">
+                    <div className="w-8 h-1 bg-white/50 rounded mb-1"></div>
+                    <div className="w-full h-0.5 bg-white/30 rounded"></div>
+                 </div>
+              </div>
+
+           </div>
+        </div>
+      </div>
+    );
+  }
 }
 
  
@@ -834,6 +911,14 @@ price: '$299' // Premium price
 
         color: '#0F172A', // Dark Blue  
         description: 'A modern dark-themed portfolio with teal highlights for technical professionals.',
+        price: '$299' // Premium price
+      },{
+        id:'TimelineFolio',
+        name: 'Timeline Folio', 
+        cat: 'Professional',  
+        color: '#1a1a1a', // Dark Gray
+
+        description: 'A timeline-based portfolio template to showcase your career journey effectively.',
         price: '$299' // Premium price
       }
     

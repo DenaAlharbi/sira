@@ -48,6 +48,9 @@ import { config as DarkDevCoralConfig } from './DarkDevCoral/config';
 import MidnightTeal from './MidnightTeal/Index';
 import { config as MidnightTealConfig } from './MidnightTeal/config';
 
+import TimelineFolio from './TimelineFolio/Index';          
+import { config as TimelineFolioConfig } from './TimelineFolio/config';
+
 
 
 // 2. MASTER REGISTRY
@@ -132,6 +135,11 @@ const REGISTRY_DATA = {
      config: MidnightTealConfig,
      isPaid: true
   },
+  'TimelineFolio': {
+     component: TimelineFolio,
+     config: TimelineFolioConfig,
+     isPaid: true
+  }
 };
 
 // --- HELPERS ---
