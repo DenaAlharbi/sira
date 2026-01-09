@@ -558,7 +558,52 @@ if (templateId === 'ImmersivePortfolio') {
         </div>
       </div>
     );
-  }}
+  }// src/components/Gallery.jsx
+
+// ... inside the main Gallery component's return statement, add this case:
+
+  // 15. SPLIT SIDEBAR PORTFOLIO
+  if (templateId === 'SplitSidebarPortfolio') {
+    return (
+      <div className="w-full h-full flex font-serif">
+        {/* Left Sidebar */}
+        <div className="w-1/3 h-full bg-[#2C2C2C] flex flex-col items-center justify-center p-4 space-y-4">
+          <div className="w-16 h-16 bg-[#444] rounded-full border-2 border-[#555]"></div>
+          <div className="w-20 h-3 bg-[#444] rounded"></div>
+          <div className="space-y-2 w-full flex flex-col items-center">
+            <div className="w-12 h-2 bg-[#444] rounded"></div>
+            <div className="w-12 h-2 bg-[#444] rounded"></div>
+            <div className="w-12 h-2 bg-[#2C98F0] rounded"></div>
+            <div className="w-12 h-2 bg-[#444] rounded"></div>
+          </div>
+        </div>
+        {/* Right Content */}
+        <div className="w-2/3 h-full bg-[#F2F3F7] p-4 overflow-hidden flex flex-col space-y-4 relative">
+          {/* Hero */}
+          <div className="h-1/3 bg-gray-300 relative">
+             <div className="absolute inset-0 bg-black/40"></div>
+             <div className="absolute bottom-4 left-4 space-y-2">
+                <div className="w-24 h-4 bg-white/80 rounded"></div>
+                <div className="w-16 h-3 bg-white/60 rounded"></div>
+             </div>
+          </div>
+          {/* Content Blocks */}
+          <div className="space-y-2">
+             <div className="w-10 h-2 bg-gray-300 rounded"></div>
+             <div className="w-32 h-3 bg-gray-400 rounded"></div>
+             <div className="w-full h-2 bg-gray-300 rounded mt-2"></div>
+             <div className="w-full h-2 bg-gray-300 rounded"></div>
+             <div className="w-2/3 h-2 bg-gray-300 rounded"></div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+             <div className="h-16 bg-white border-b-2 border-transparent"></div>
+             <div className="h-16 bg-white border-b-2 border-[#2C98F0]"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
 
  
 // --- MAIN GALLERY COMPONENT ---
@@ -660,6 +705,14 @@ price: '$299' // Premium price
         color: '#0A1A12', // Dark Green
         description: 'A high-end portfolio template with a focus on fine art and photography.',
         price: '$399' // Premium price
+      },{
+        id:'SplitSidebarPortfolio',
+        name: 'Split Sidebar Portfolio', 
+        cat: 'Professional',    
+        color: '#2C2C2C', // Dark Gray
+        description: 'A unique split-layout portfolio with a sidebar for easy navigation.',
+        price: '$299' // Premium price
+
       }
     
   ];

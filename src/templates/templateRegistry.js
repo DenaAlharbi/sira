@@ -37,6 +37,9 @@ import {config as DarkProductFolioConfig} from './DarkProductFolio/config';
 
 import LuxGalleria from './LuxGalleria/Index';
 import {config as LuxGalleriaConfig} from './LuxGalleria/config';
+
+import SplitSidebarPortfolio from './SplitSidebarPortfolio/Index';
+import { config as SplitSidebarPortfolioConfig } from './SplitSidebarPortfolio/config';
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -98,6 +101,10 @@ const REGISTRY_DATA = {
     },'LuxGalleria': {
         component: LuxGalleria,
         config: LuxGalleriaConfig,
+        isPaid: true
+    },'SplitSidebarPortfolio': {
+        component: SplitSidebarPortfolio,
+        config: SplitSidebarPortfolioConfig,
         isPaid: true
     }
 };
