@@ -525,6 +525,39 @@ if (templateId === 'ImmersivePortfolio') {
         </div>
       </div>
     );
+  }
+// 14. LUX GALLERIA
+  if (templateId === 'LuxGalleria') {
+    return (
+      <div className="w-full h-full relative bg-[#0A1A12] overflow-hidden font-serif flex flex-col">
+        <div className={scaleWrapperClass}>
+          {/* Hero */}
+          <div className="h-[60%] bg-[#14261B] relative flex flex-col items-center justify-center p-8 text-center">
+             {/* Faux Image */}
+             <div className="absolute inset-0 bg-gradient-to-t from-[#0A1A12] to-transparent opacity-80 z-10"></div>
+             <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2342&q=80')] bg-cover bg-center grayscale"></div>
+             
+             <div className="relative z-20">
+               <p className="text-[8px] uppercase tracking-[0.3em] text-[#C4BDB3] mb-2">Fine Art Photography</p>
+               <h1 className="text-4xl text-[#F2EFE9] uppercase leading-none mb-2">ELARA<br/>VOSS</h1>
+             </div>
+          </div>
+
+          {/* Gallery Preview */}
+          <div className="h-[40%] bg-[#0A1A12] p-4 grid grid-cols-3 gap-2">
+             <div className="bg-[#14261B] h-full relative overflow-hidden group">
+                <div className="absolute bottom-2 left-2 text-[6px] text-[#F2EFE9] uppercase tracking-widest opacity-0 group-hover:opacity-100">Editorials</div>
+             </div>
+             <div className="bg-[#14261B] h-[120%] -mt-4 relative overflow-hidden group">
+                 <div className="absolute bottom-2 left-2 text-[6px] text-[#F2EFE9] uppercase tracking-widest opacity-0 group-hover:opacity-100">Portraits</div>
+             </div>
+             <div className="bg-[#14261B] h-full relative overflow-hidden group">
+                 <div className="absolute bottom-2 left-2 text-[6px] text-[#F2EFE9] uppercase tracking-widest opacity-0 group-hover:opacity-100">Events</div>
+             </div>
+          </div>
+        </div>
+      </div>
+    );
   }}
 
  
@@ -620,6 +653,13 @@ cat: 'Technical',
 color: '#111111', // Dark Gray
 description: 'A modern dark-themed portfolio designed for product designers and tech leads.',
 price: '$299' // Premium price
+      },{
+        id:'LuxGalleria',
+        name: 'Lux Galleria', 
+        cat: 'Luxury',    
+        color: '#0A1A12', // Dark Green
+        description: 'A high-end portfolio template with a focus on fine art and photography.',
+        price: '$399' // Premium price
       }
     
   ];

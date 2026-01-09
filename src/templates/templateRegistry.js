@@ -34,6 +34,9 @@ import LavenderExecutive from './LavenderExecutive/Index';
 
 import DarkProductFolio from './DarkProductFolio/Index';
 import {config as DarkProductFolioConfig} from './DarkProductFolio/config';
+
+import LuxGalleria from './LuxGalleria/Index';
+import {config as LuxGalleriaConfig} from './LuxGalleria/config';
 // 2. MASTER REGISTRY
 const REGISTRY_DATA = {
   'BasicFree': { 
@@ -91,6 +94,10 @@ const REGISTRY_DATA = {
     }, 'DarkProductFolio': {
         component: DarkProductFolio,
         config: DarkProductFolioConfig,
+        isPaid: true
+    },'LuxGalleria': {
+        component: LuxGalleria,
+        config: LuxGalleriaConfig,
         isPaid: true
     }
 };
