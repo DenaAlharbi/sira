@@ -51,6 +51,7 @@ export const config = [
     type: 'repeater',
     min: 1, 
     max: 1,
+    limitReason: 'The free template allows only one contact method.', // <--- EDIT THIS TEXT
     fields: [
       { 
         key: 'platform', 
