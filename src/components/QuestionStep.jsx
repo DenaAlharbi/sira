@@ -92,11 +92,12 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
             </div>
             
             {/* INPUT RENDERER */}
-            {/* THE FIX: 
-                Mobile: text-[13px] (Small & Clean)
-                Desktop (md): text-3xl (Restores the original big elegance)
-            */}
-            <div className="flex-1 min-h-0 flex flex-col overflow-y-auto pr-1 md:pr-2 custom-scrollbar pb-2 [&_::placeholder]:!text-[13px] md:[&_::placeholder]:!text-3xl">
+            {/* Added a shake animation if there is an error */}
+            <motion.div 
+              animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
+              transition={{ duration: 0.4 }}
+              className="flex-1 min-h-0 flex flex-col overflow-y-auto pr-1 md:pr-2 custom-scrollbar pb-2 [&_::placeholder]:!text-[13px] md:[&_::placeholder]:!text-3xl"
+            >
               <InputRenderer 
                 question={currentQuestion}
                 value={form[currentQuestion.key]}
@@ -110,31 +111,38 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
                 onRepeaterUpload={handleRepeaterUpload}
                 uploadingState={uploadingState}
               />
-            </div>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
 
-        {/* ERROR TOAST */}
+        {/* ERROR TOAST - RESTORED & POSITIONED */}
         <AnimatePresence>
           {error && (
             <motion.div 
+              // Slide down from top on mobile, up from bottom on desktop
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              md={{ initial: { opacity: 0, y: 10, scale: 0.95 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: 10, scale: 0.95 } }}
-              className="fixed top-4 left-4 right-4 z-50 md:absolute md:top-auto md:bottom-0 md:left-0 md:right-0 md:z-20 md:px-4 md:pb-1"
+              transition={{ duration: 0.2 }}
+              className="absolute top-0 left-0 right-0 z-50 md:top-auto md:bottom-0 p-4 pointer-events-none"
             >
-              <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-red-600 shadow-lg mx-auto w-full md:w-fit max-w-md backdrop-blur-sm bg-opacity-95">
-                <div className="shrink-0 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-red-100 rounded-full">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+              <div className="flex items-center gap-3 px-4 py-3 bg-red-50/95 border border-red-100 rounded-xl text-red-600 shadow-xl backdrop-blur-md mx-auto w-full max-w-sm md:w-fit pointer-events-auto">
+                <div className="shrink-0 w-6 h-6 flex items-center justify-center bg-red-100 rounded-full">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
                 </div>
-                <span className="text-xs md:text-sm font-semibold tracking-wide leading-tight flex-1">
+                <span className="text-xs md:text-sm font-bold tracking-wide leading-tight flex-1">
                   {error}
                 </span>
+                {/* Close Button for Error */}
+                <button onClick={() => handleBlur()} className="p-1 hover:bg-red-100 rounded-full transition-colors">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
               </div>
             </motion.div>
           )}

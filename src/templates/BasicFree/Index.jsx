@@ -130,7 +130,7 @@ export default function BasicFree({ data }) {
         {/* === FOOTER === */}
         <footer className="pt-12 md:pt-20 border-t border-slate-100 text-center">
           <p className="text-xs text-slate-300 uppercase tracking-widest">
-            ©  {fullName} <br className="md:hidden" /> 
+            ©  {new Date().getFullYear()} {fullName} <br className="md:hidden" /> 
             <span className="hidden md:inline"> — </span>
             Built with <span className="text-slate-900 font-bold">Portfiller</span>
           </p>

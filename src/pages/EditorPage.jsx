@@ -37,7 +37,7 @@ export default function EditorPage() {
     fullName: '', 
     title: '', 
     bio: '', 
-    experience: [],
+    projects: [],
     contact: []
   });
 

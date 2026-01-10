@@ -33,15 +33,23 @@ export default function InputRenderer({
     
     case 'textarea':
       return (
-        <textarea 
-          autoFocus 
-          rows={4} 
-          className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 resize-none" 
-          placeholder={question.placeholder} 
-          value={val} 
-          onChange={e => onChange(e.target.value)} 
-          onBlur={onBlur}
-        />
+        <div className="flex flex-col w-full">
+          <textarea 
+            autoFocus 
+            rows={4} 
+            className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 resize-none" 
+            placeholder={question.placeholder} 
+            value={val} 
+            onChange={e => onChange(e.target.value)} 
+            onBlur={onBlur}
+          />
+          {/* Character Count Helper */}
+          {(question.maxLength || question.max) && (
+            <div className="text-right text-xs text-slate-300 mt-2">
+              {val.length} / {question.maxLength || question.max}
+            </div>
+          )}
+        </div>
       );
     
     case 'select':
@@ -129,14 +137,27 @@ export default function InputRenderer({
       );
 
     case 'repeater':
-      const items = form[question.key] || [];
+      // FIX: Ensure we have an array, even if state is undefined
+      const items = Array.isArray(form[question.key]) ? form[question.key] : [];
+      
+      // FIX: Check for 'inputs' (New Config) OR 'fields' (Old Config)
+      const subFields = question.inputs || question.fields || [];
+
       return (
         <RepeaterField 
           items={items}
-          fields={question.fields}
+          fields={subFields} // Pass the corrected fields
           questionKey={question.key}
           onUpdate={onRepeaterUpdate} 
-          onAdd={() => !question.max || items.length < question.max ? updateForm({ [question.key]: [...items, {}] }) : null}
+          // Add Item Logic: Ensure we create a clean object
+          onAdd={() => {
+            if (!question.max || items.length < question.max) {
+               // Create object with empty keys to prevent uncontrolled input warnings
+               const newItem = {};
+               subFields.forEach(f => newItem[f.key] = '');
+               updateForm({ [question.key]: [...items, newItem] });
+            }
+          }}
           onRemove={(idx) => updateForm({ [question.key]: items.filter((_, i) => i !== idx) })}
           onUpload={onRepeaterUpload}
           uploadingState={uploadingState}
