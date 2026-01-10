@@ -2,60 +2,72 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getTemplateQuestions } from '../templates/templateRegistry';
 import { useImageUpload } from '../hooks/useImageUpload'; 
-import RepeaterField from './inputs/RepeaterField';   
-import { validateEmail } from '../utils/emailValidator';    
+import RepeaterField from './inputs/RepeaterField';    
+// 1. IMPORT VALIDATORS
+import { validateEmail, validatePhone, validateUrl, verifyGithubUser } from '../utils/validators';     
 
 export default function QuestionStep({ templateId, form, updateForm, onNext, onExit }) {
   const questions = getTemplateQuestions(templateId);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [error, setError] = useState(null);
   
-  // Use custom hook for uploads
+  // Custom hook for uploads
   const { uploadImage, uploadingState } = useImageUpload(); 
+
+  // State for Debounce Timer (GitHub API)
+  const [githubTimer, setGithubTimer] = useState(null);
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  // --- LOGIC ---
+  // --- LOGIC: Calculate Question Number (Skipping Sections) ---
   const questionNumber = useMemo(() => {
     if (currentQuestion.type === 'section') return null;
     return questions.slice(0, currentQuestionIndex + 1).filter(q => q.type !== 'section').length;
   }, [currentQuestionIndex, questions, currentQuestion]);
 
+  // --- LOGIC: Initialize Repeater Array ---
   useEffect(() => {
     if (currentQuestion?.type === 'repeater' && !form[currentQuestion.key]) {
       updateForm({ [currentQuestion.key]: [] });
     }
     setError(null);
   }, [currentQuestionIndex]);
-const handleBlur = (e) => {
-    const inputValue = e.target.value;
-    
-    // LOGIC: Check if this field should be validated as an email.
-    // We check if the 'key' or 'id' in your config is 'email'.
-    // OR if we are inside a Repeater and the platform is 'Email' (handled below).
-    
-    const isEmailField = 
-      question.key === 'email' || 
-      question.id === 'email' ||
-      (question.key === 'value' && question.platform === 'Email'); // Specific for your Contact Repeater
 
-    if (isEmailField) {
-      const check = validateEmail(inputValue);
-      if (!check.isValid) {
-        setError(check.error);
-      } else {
-        setError(null);
-      }
+
+  // --- VALIDATION HELPER ---
+  const runValidation = (key, value, platform = null) => {
+    // 1. Email Check
+    if (key === 'email' || platform === 'Email') {
+      return validateEmail(value);
     }
+    // 2. Phone Check
+    if (key === 'phone' || platform === 'Phone') {
+      return validatePhone(value);
+    }
+    // 3. URL/Platform Check
+    const urlPlatforms = ['LinkedIn', 'Twitter / X', 'Website', 'Instagram', 'Behance', 'GitHub'];
+    if (urlPlatforms.includes(platform)) {
+      return validateUrl(value, platform);
+    }
+    
+    return { isValid: true };
   };
-  // 4. CLEAR ERROR WHEN TYPING
-  const handleChange = (e) => {
+
+  // --- HANDLER: Standard Input Blur ---
+  const handleBlur = (e) => {
+    const result = runValidation(currentQuestion.key, e.target.value);
+    if (!result.isValid) setError(result.error);
+    else setError(null);
+  };
+
+  // --- HANDLER: Standard Input Change ---
+  const handleChange = (val) => {
     if (error) setError(null);
-    onChange(e.target.value);
+    updateForm({ [currentQuestion.key]: val });
   };
-  // --- HANDLERS ---
+
+  // --- HANDLER: File Uploads ---
   const handleSingleUpload = async (file) => {
-    // This handles both Images and PDFs (Resume)
     const url = await uploadImage(file, currentQuestion.key);
     if (url) updateForm({ [currentQuestion.key]: url });
   };
@@ -69,8 +81,50 @@ const handleBlur = (e) => {
     }
   };
 
+  // --- HANDLER: Repeater Update (With Debounced GitHub Logic) ---
+  const handleRepeaterUpdate = (idx, key, val) => {
+    const items = form[currentQuestion.key] || [];
+    const updated = [...items];
+    const platform = updated[idx].platform;
+    
+    updated[idx] = { ...updated[idx], [key]: val };
+    updateForm({ [currentQuestion.key]: updated });
+
+    // Validate only if editing the 'value' field (text input)
+    if (key === 'value') {
+      // 1. Instant Regex Check
+      const check = runValidation(null, val, platform);
+      
+      if (!check.isValid) {
+        setError(check.error);
+        return; 
+      } else {
+        setError(null);
+      }
+
+      // 2. Async GitHub Check (Debounced)
+      // Only runs if platform is GitHub and input looks valid so far
+      if (platform === 'GitHub' && val.length > 2) {
+        if (githubTimer) clearTimeout(githubTimer); // Reset timer if typing continues
+        
+        const timer = setTimeout(async () => {
+             const ghCheck = await verifyGithubUser(val);
+             if (!ghCheck.isValid) {
+                setError(ghCheck.error);
+             }
+        }, 800); // Wait 800ms after last keystroke
+        
+        setGithubTimer(timer);
+      }
+    }
+  };
+
+  // --- HANDLER: Next Button Click ---
   const handleNextClick = () => {
-    // Validation
+    // 1. Block if there's an existing validation error
+    if (error) return;
+
+    // 2. Check Requirements
     const val = form[currentQuestion.key];
     
     if (currentQuestion.type === 'repeater') {
@@ -84,43 +138,61 @@ const handleBlur = (e) => {
       return setError("This field is required.");
     }
 
+    // 3. Proceed
     setError(null);
     if (currentQuestionIndex < questions.length - 1) setCurrentQuestionIndex(prev => prev + 1);
     else onNext();
   };
 
-  // --- RENDERERS ---
+  // --- RENDER INPUTS ---
   const renderInput = () => {
     const value = form[currentQuestion.key] || '';
 
     switch (currentQuestion.type) {
       case 'text':
-        return <input autoFocus type="text" className="w-full text-2xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 transition-colors" placeholder={currentQuestion.placeholder} value={value} onChange={e => updateForm({ [currentQuestion.key]: e.target.value })} onKeyDown={e => e.key === 'Enter' && handleNextClick()} />;
+        return (
+          <input 
+            autoFocus 
+            type="text" 
+            className="w-full text-2xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 transition-colors" 
+            placeholder={currentQuestion.placeholder} 
+            value={value} 
+            onChange={e => handleChange(e.target.value)} 
+            onBlur={handleBlur} 
+            onKeyDown={e => e.key === 'Enter' && handleNextClick()} 
+          />
+        );
       
       case 'textarea':
-        return <textarea autoFocus rows={4} className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 resize-none" placeholder={currentQuestion.placeholder} value={value} onChange={e => updateForm({ [currentQuestion.key]: e.target.value })} />;
+        return (
+          <textarea 
+            autoFocus 
+            rows={4} 
+            className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 resize-none" 
+            placeholder={currentQuestion.placeholder} 
+            value={value} 
+            onChange={e => handleChange(e.target.value)} 
+            onBlur={handleBlur}
+          />
+        );
       
-      // --- ADDED: SELECT SUPPORT (For Social Platforms) ---
       case 'select':
         return (
           <div className="relative">
             <select 
               className="w-full text-xl font-light border-b-2 border-slate-100 focus:border-sira-purple outline-none bg-transparent py-4 appearance-none cursor-pointer"
               value={value} 
-              onChange={e => updateForm({ [currentQuestion.key]: e.target.value })}
+              onChange={e => handleChange(e.target.value)}
             >
               <option value="" disabled>Select an option...</option>
               {currentQuestion.options?.map((opt, idx) => (
                 <option key={idx} value={opt}>{opt}</option>
               ))}
             </select>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-              ▼
-            </div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
           </div>
         );
 
-      // --- ADDED: FILE SUPPORT (For Resume PDF) ---
       case 'file':
         return (
           <div className="w-full">
@@ -165,7 +237,6 @@ const handleBlur = (e) => {
       case 'image-select':
         return (
           <div className="space-y-6">
-            {/* 1. The Presets Grid */}
             <div className="grid grid-cols-3 gap-4">
               {currentQuestion.options?.map((optionUrl, idx) => (
                 <button
@@ -178,8 +249,6 @@ const handleBlur = (e) => {
                   }`}
                 >
                   <img src={optionUrl} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
-                  
-                  {/* Selected Checkmark */}
                   {value === optionUrl && (
                     <div className="absolute inset-0 bg-sira-purple/20 flex items-center justify-center">
                       <div className="bg-white text-sira-purple rounded-full p-1 shadow-sm">
@@ -190,15 +259,11 @@ const handleBlur = (e) => {
                 </button>
               ))}
             </div>
-
-            {/* Divider */}
             <div className="flex items-center gap-4">
                <div className="h-px bg-slate-200 flex-1"></div>
                <span className="text-[10px] uppercase text-slate-400 font-bold tracking-widest">OR</span>
                <div className="h-px bg-slate-200 flex-1"></div>
             </div>
-
-            {/* 2. The Upload Button */}
             <div className="w-full">
                <label className={`flex cursor-pointer border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-white hover:border-sira-purple transition-all px-6 py-6 rounded-xl text-xs font-bold uppercase tracking-widest items-center justify-center gap-3 ${uploadingState[currentQuestion.key] ? 'opacity-50 pointer-events-none' : ''}`}>
                   {uploadingState[currentQuestion.key] ? (
@@ -219,11 +284,7 @@ const handleBlur = (e) => {
             items={items}
             fields={currentQuestion.fields}
             questionKey={currentQuestion.key}
-            onUpdate={(idx, key, val) => {
-              const updated = [...items];
-              updated[idx] = { ...updated[idx], [key]: val };
-              updateForm({ [currentQuestion.key]: updated });
-            }}
+            onUpdate={handleRepeaterUpdate} // <--- Uses the new Debounced Logic
             onAdd={() => !currentQuestion.max || items.length < currentQuestion.max ? updateForm({ [currentQuestion.key]: [...items, {}] }) : null}
             onRemove={(idx) => updateForm({ [currentQuestion.key]: items.filter((_, i) => i !== idx) })}
             onUpload={handleRepeaterUpload}
@@ -237,7 +298,7 @@ const handleBlur = (e) => {
     }
   };
 
-  // --- SECTION VIEW ---
+  // --- SECTION VIEW RENDER ---
   if (currentQuestion?.type === 'section') {
     return (
       <div className="flex flex-col justify-center items-center h-full text-center px-4 py-8">
@@ -248,7 +309,7 @@ const handleBlur = (e) => {
     );
   }
 
-  // --- MAIN VIEW ---
+  // --- MAIN COMPONENT RENDER ---
   return (
     <div className="relative flex flex-col h-full justify-between">
       <AnimatePresence mode="wait">
@@ -259,7 +320,8 @@ const handleBlur = (e) => {
             {currentQuestion.sub && <p className="text-slate-400 text-sm mb-6">{currentQuestion.sub}</p>}
           </div>
           <div className="flex-1 min-h-0 flex flex-col">{renderInput()}</div>
-          {error && <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm font-medium rounded-lg">{error}</div>}
+          {/* Error Message Display */}
+          {error && <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm font-medium rounded-lg animate-pulse">⚠️ {error}</div>}
         </motion.div>
       </AnimatePresence>
 
