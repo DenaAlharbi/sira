@@ -2,22 +2,19 @@ import React from 'react';
 
 export default function BasicFree({ data }) {
   // 1. Safe Destructuring with Defaults
+  // Switched 'experience' to 'projects'
   const { 
     fullName = 'Your Name', 
     title = 'Professional Title', 
     bio = 'No biography provided yet.', 
-    experience = [], 
+    projects = [], 
     contact = [] 
   } = data || {}; 
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-black selection:text-white">
       
-      {/* CONTAINER FIX: 
-        - max-w-3xl: Limits width so it doesn't stretch too wide on big screens
-        - mx-auto: Centers the container itself
-        - px-6: Adds side padding for mobile so text doesn't touch edges
-      */}
+      {/* CONTAINER FIX */}
       <div className="max-w-3xl mx-auto px-6 md:px-12 py-12 md:py-20">
         
         {/* HEADER */}
@@ -28,7 +25,7 @@ export default function BasicFree({ data }) {
           <p className="text-lg md:text-xl text-slate-500 font-medium">
             {title}
           </p>
-         <div className="w-full h-1 bg-black mt-8"></div>
+          <div className="w-full h-1 bg-black mt-8"></div>
         </header>
 
         <main className="space-y-16">
@@ -43,36 +40,43 @@ export default function BasicFree({ data }) {
             </p>
           </section>
 
-          {/* EXPERIENCE SECTION */}
+          {/* PROJECTS SECTION (Replaced Experience) */}
           <section>
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-8">
-              Experience
+              Projects
             </h2>
-            <div className="space-y-10 border-l border-slate-100 pl-6 md:pl-8 -ml-2">
-              {experience && experience.length > 0 ? (
-                experience.map((job, index) => (
-                  <div key={index} className="relative">
-                    {/* Timeline Dot */}
-                    <div className="absolute -left-[31px] md:-left-[39px] top-1.5 w-3 h-3 rounded-full bg-slate-200 border-2 border-white"></div>
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-2">
-                      <h3 className="text-lg font-bold text-black">
-                        {job.company || 'Company Name'}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {projects && projects.length > 0 ? (
+                projects.map((project, index) => (
+                  <div 
+                    key={index} 
+                    className="group border border-slate-200 p-6 rounded-lg hover:border-black transition-all duration-300 flex flex-col justify-between"
+                  >
+                    <div>
+                      <h3 className="text-lg font-bold text-black mb-2 group-hover:underline decoration-2 underline-offset-4">
+                        <a href={project.link || '#'} target="_blank" rel="noreferrer">
+                           {project.title || 'Project Name'}
+                        </a>
                       </h3>
-                      <span className="text-xs font-mono text-slate-400 mt-1 sm:mt-0">
-                        {job.duration || 'Dates'}
-                      </span>
+                      <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                        {project.description || 'No description provided for this project.'}
+                      </p>
                     </div>
-                    <div className="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">
-                      {job.role || 'Role'}
-                    </div>
-                    <p className="text-sm md:text-base text-slate-600 leading-relaxed">
-                      {job.description || 'No description added.'}
-                    </p>
+                    
+                    {project.link && (
+                      <a 
+                        href={project.link} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-black mt-auto flex items-center gap-1"
+                      >
+                        View Project <span>&rarr;</span>
+                      </a>
+                    )}
                   </div>
                 ))
               ) : (
-                <p className="text-slate-400 italic text-sm">No experience added yet.</p>
+                <p className="text-slate-400 italic text-sm">No projects added yet.</p>
               )}
             </div>
           </section>

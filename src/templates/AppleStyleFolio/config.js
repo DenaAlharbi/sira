@@ -12,17 +12,19 @@ export const config = [
     key: 'fullName',
     type: 'text',
     label: 'Full Name',
-    placeholder: 'e.g., Brian Do',
+    placeholder: 'Your Name',
     required: true,
   },
-  {
-    id: 'aboutMe',
-    key: 'aboutMe',
-    type: 'textarea',
-    label: 'About Me',
-    placeholder: 'A short bio about yourself...',
-    helper: 'This will appear in a smaller gray font under your name.',
-  },
+  { 
+  id: 'bio', 
+  label: 'Professional Bio', 
+  key: 'bio',  // <--- Standardize this key everywhere
+  type: 'textarea', 
+  placeholder: 'I am a passionate developer...', 
+  required: true, 
+  minLength: 30,
+  maxLength: 600 
+},
  {
     id: 'profileImage',
     key: 'profileImage',

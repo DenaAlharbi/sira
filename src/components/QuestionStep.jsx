@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getTemplateQuestions } from '../templates/templateRegistry';
 import { useImageUpload } from '../hooks/useImageUpload'; 
-import RepeaterField from './inputs/RepeaterField';       
+import RepeaterField from './inputs/RepeaterField';   
+import { validateEmail } from '../utils/emailValidator';    
 
 export default function QuestionStep({ templateId, form, updateForm, onNext, onExit }) {
   const questions = getTemplateQuestions(templateId);
@@ -26,7 +27,32 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
     }
     setError(null);
   }, [currentQuestionIndex]);
+const handleBlur = (e) => {
+    const inputValue = e.target.value;
+    
+    // LOGIC: Check if this field should be validated as an email.
+    // We check if the 'key' or 'id' in your config is 'email'.
+    // OR if we are inside a Repeater and the platform is 'Email' (handled below).
+    
+    const isEmailField = 
+      question.key === 'email' || 
+      question.id === 'email' ||
+      (question.key === 'value' && question.platform === 'Email'); // Specific for your Contact Repeater
 
+    if (isEmailField) {
+      const check = validateEmail(inputValue);
+      if (!check.isValid) {
+        setError(check.error);
+      } else {
+        setError(null);
+      }
+    }
+  };
+  // 4. CLEAR ERROR WHEN TYPING
+  const handleChange = (e) => {
+    if (error) setError(null);
+    onChange(e.target.value);
+  };
   // --- HANDLERS ---
   const handleSingleUpload = async (file) => {
     // This handles both Images and PDFs (Resume)
