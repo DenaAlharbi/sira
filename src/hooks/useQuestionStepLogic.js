@@ -63,8 +63,10 @@ export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit
     }
   };
 
-  // --- UPDATED REPEATER LOGIC ---
-  const handleRepeaterUpdate = (idx, key, val) => {
+ const handleRepeaterUpdate = (idx, key, val) => {
+    // 1. CLEAR ERROR: Remove the error message as soon as the user types
+    if (error) setError(null);
+
     const items = form[currentQuestion.key] || [];
     const updated = [...items];
     
@@ -77,21 +79,18 @@ export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit
     const platform = currentItem.platform;
     const value = currentItem.value;
 
-    // VALIDATE: Trigger if we change the VALUE -OR- the PLATFORM
+    // VALIDATE: Trigger specific checks (only for Contact/Social fields)
     if (key === 'value' || key === 'platform') {
       
-      // Only validate if we actually have a value to check
       if (value) {
         const check = runValidation(null, value, platform);
         
+        // Note: We don't block typing here, just show error if invalid format
         if (!check.isValid) {
           setError(check.error);
-          return; 
-        } else {
-          setError(null);
         }
 
-        // GitHub Debounce (Only triggers if typing value, not changing platform)
+        // GitHub Debounce
         if (key === 'value' && platform === 'GitHub' && value.length > 2) {
           if (githubTimer) clearTimeout(githubTimer);
           const timer = setTimeout(async () => {
@@ -103,61 +102,77 @@ export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit
       }
     }
   };
-
-  // --- UPDATED NEXT BUTTON LOGIC (THE FIX) ---
+// --- SAFER NEXT BUTTON LOGIC ---
   const handleNextClick = () => {
-    // 1. Check if there is an existing error displayed
+    // 1. Block if there is an existing validation error (like invalid email format)
     if (error) return;
 
     const val = form[currentQuestion.key];
 
-    // 2. REPEATER VALIDATION (Strict Check)
+    // --- CASE A: REPEATER FIELDS ---
     if (currentQuestion.type === 'repeater') {
       const items = val || [];
       
-      // A. Check Min Length
+      // Check Min Quantity
       if (currentQuestion.min && items.length < currentQuestion.min) {
         return setError(`Add at least ${currentQuestion.min} item(s).`);
       }
 
-      // B. Check Empty Required Fields
+      // Check Required Fields inside the repeater
       if (currentQuestion.fields) {
         const missing = items.some(item => currentQuestion.fields.some(f => f.required && !item[f.key]));
         if (missing) return setError("Please complete all required fields.");
       }
 
-      // C. FORCE RE-VALIDATION OF CONTENT (The Fix)
-      // Loop through every item and run the validator again.
+      // Re-validate content (Email/Phone inside repeater)
       for (const item of items) {
-        // Check Contact Repeater items specifically
         if (item.platform && item.value) {
            const check = runValidation(null, item.value, item.platform);
-           if (!check.isValid) {
-             return setError(check.error); // Stop and show error
-           }
+           if (!check.isValid) return setError(check.error);
         }
       }
     } 
-    // 3. STANDARD FIELD VALIDATION
+    
+    // --- CASE B: STANDARD FIELDS (Text, Textarea, Select) ---
     else {
-      // A. Check Required
-      if (currentQuestion.required && (!val || !val.trim())) {
+      // 1. Check Required (Is it empty?)
+      // We check !val first. If it exists, we trim it to ensure it's not just spaces.
+      const isEmpty = !val || (typeof val === 'string' && !val.trim());
+      
+      if (currentQuestion.required && isEmpty) {
         return setError("This field is required.");
       }
       
-      // B. Force Re-Validation (e.g. Email/Phone input)
-      const check = runValidation(currentQuestion.key, val);
-      if (!check.isValid) {
-        return setError(check.error);
+      // 2. Check Character Limits (Run only if not empty)
+      if (!isEmpty) {
+        // Min Length Check
+        if (currentQuestion.minLength && val.length < currentQuestion.minLength) {
+          return setError(`Must be at least ${currentQuestion.minLength} characters. (Current: ${val.length})`);
+        }
+        
+        // Max Length Check
+        if (currentQuestion.maxLength && val.length > currentQuestion.maxLength) {
+           return setError(`Must be less than ${currentQuestion.maxLength} characters.`);
+        }
+      }
+
+      // 3. Type Validation (Email/Phone/URL format)
+      if (!isEmpty) {
+        const check = runValidation(currentQuestion.key, val);
+        if (!check.isValid) {
+          return setError(check.error);
+        }
       }
     }
 
-    // 4. Success -> Move Next
+    // --- SUCCESS: PROCEED ---
     setError(null);
-    if (currentQuestionIndex < questions.length - 1) setCurrentQuestionIndex(prev => prev + 1);
-    else onNext();
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      onNext();
+    }
   };
-
   const handleBackClick = () => {
     if (currentQuestionIndex > 0) setCurrentQuestionIndex(prev => prev - 1);
     else onExit();

@@ -35,7 +35,7 @@ export const config = [
     key: 'projects', 
     type: 'repeater',
     min: 1, 
-    max: 3,
+    max: 2,
     fields: [
       { key: 'title', label: 'Project Name', type: 'text', required: true },
       { key: 'description', label: 'Short Description', type: 'textarea' },
@@ -50,7 +50,7 @@ export const config = [
     key: 'contact', 
     type: 'repeater',
     min: 1, 
-    max: 3,
+    max: 1,
     fields: [
       { 
         key: 'platform', 
