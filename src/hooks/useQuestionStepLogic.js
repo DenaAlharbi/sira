@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useImageUpload } from './useImageUpload'; // Assuming this exists
+import { useImageUpload } from './useImageUpload'; 
 import { validateEmail, validatePhone, validateUrl, verifyGithubUser } from '../utils/validators';
 
 export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit) => {
@@ -10,13 +10,13 @@ export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit
   const { uploadImage, uploadingState } = useImageUpload();
   const currentQuestion = questions[currentQuestionIndex];
 
-  // Logic: Calculate visible question number
+  // Helper: Calculate visible question number
   const questionNumber = useMemo(() => {
     if (currentQuestion.type === 'section') return null;
     return questions.slice(0, currentQuestionIndex + 1).filter(q => q.type !== 'section').length;
   }, [currentQuestionIndex, questions, currentQuestion]);
 
-  // Logic: Initialize arrays for repeaters
+  // Helper: Initialize arrays
   useEffect(() => {
     if (currentQuestion?.type === 'repeater' && !form[currentQuestion.key]) {
       updateForm({ [currentQuestion.key]: [] });
@@ -28,9 +28,12 @@ export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit
   const runValidation = (key, value, platform = null) => {
     if (key === 'email' || platform === 'Email') return validateEmail(value);
     if (key === 'phone' || platform === 'Phone') return validatePhone(value);
-    if (['LinkedIn', 'Twitter / X', 'Website', 'Instagram', 'Behance', 'GitHub'].includes(platform)) {
+    
+    const urlPlatforms = ['LinkedIn', 'Twitter / X', 'Website', 'Instagram', 'Behance', 'GitHub'];
+    if (urlPlatforms.includes(platform)) {
       return validateUrl(value, platform);
     }
+    
     return { isValid: true };
   };
 
@@ -60,50 +63,96 @@ export const useQuestionStepLogic = (questions, form, updateForm, onNext, onExit
     }
   };
 
+  // --- UPDATED REPEATER LOGIC ---
   const handleRepeaterUpdate = (idx, key, val) => {
     const items = form[currentQuestion.key] || [];
     const updated = [...items];
-    const platform = updated[idx].platform;
     
+    // Update the value
     updated[idx] = { ...updated[idx], [key]: val };
     updateForm({ [currentQuestion.key]: updated });
+    
+    // Get latest state of this item
+    const currentItem = updated[idx];
+    const platform = currentItem.platform;
+    const value = currentItem.value;
 
-    if (key === 'value') {
-      const check = runValidation(null, val, platform);
-      if (!check.isValid) {
-        setError(check.error);
-        return;
-      } else {
-        setError(null);
-      }
+    // VALIDATE: Trigger if we change the VALUE -OR- the PLATFORM
+    if (key === 'value' || key === 'platform') {
+      
+      // Only validate if we actually have a value to check
+      if (value) {
+        const check = runValidation(null, value, platform);
+        
+        if (!check.isValid) {
+          setError(check.error);
+          return; 
+        } else {
+          setError(null);
+        }
 
-      // GitHub Debounce
-      if (platform === 'GitHub' && val.length > 2) {
-        if (githubTimer) clearTimeout(githubTimer);
-        const timer = setTimeout(async () => {
-             const ghCheck = await verifyGithubUser(val);
-             if (!ghCheck.isValid) setError(ghCheck.error);
-        }, 800);
-        setGithubTimer(timer);
+        // GitHub Debounce (Only triggers if typing value, not changing platform)
+        if (key === 'value' && platform === 'GitHub' && value.length > 2) {
+          if (githubTimer) clearTimeout(githubTimer);
+          const timer = setTimeout(async () => {
+              const ghCheck = await verifyGithubUser(value);
+              if (!ghCheck.isValid) setError(ghCheck.error);
+          }, 800);
+          setGithubTimer(timer);
+        }
       }
     }
   };
 
+  // --- UPDATED NEXT BUTTON LOGIC (THE FIX) ---
   const handleNextClick = () => {
+    // 1. Check if there is an existing error displayed
     if (error) return;
 
     const val = form[currentQuestion.key];
+
+    // 2. REPEATER VALIDATION (Strict Check)
     if (currentQuestion.type === 'repeater') {
       const items = val || [];
-      if (currentQuestion.min && items.length < currentQuestion.min) return setError(`Add at least ${currentQuestion.min} item(s).`);
+      
+      // A. Check Min Length
+      if (currentQuestion.min && items.length < currentQuestion.min) {
+        return setError(`Add at least ${currentQuestion.min} item(s).`);
+      }
+
+      // B. Check Empty Required Fields
       if (currentQuestion.fields) {
         const missing = items.some(item => currentQuestion.fields.some(f => f.required && !item[f.key]));
         if (missing) return setError("Please complete all required fields.");
       }
-    } else if (currentQuestion.required && (!val || !val.trim())) {
-      return setError("This field is required.");
+
+      // C. FORCE RE-VALIDATION OF CONTENT (The Fix)
+      // Loop through every item and run the validator again.
+      for (const item of items) {
+        // Check Contact Repeater items specifically
+        if (item.platform && item.value) {
+           const check = runValidation(null, item.value, item.platform);
+           if (!check.isValid) {
+             return setError(check.error); // Stop and show error
+           }
+        }
+      }
+    } 
+    // 3. STANDARD FIELD VALIDATION
+    else {
+      // A. Check Required
+      if (currentQuestion.required && (!val || !val.trim())) {
+        return setError("This field is required.");
+      }
+      
+      // B. Force Re-Validation (e.g. Email/Phone input)
+      const check = runValidation(currentQuestion.key, val);
+      if (!check.isValid) {
+        return setError(check.error);
+      }
     }
 
+    // 4. Success -> Move Next
     setError(null);
     if (currentQuestionIndex < questions.length - 1) setCurrentQuestionIndex(prev => prev + 1);
     else onNext();
