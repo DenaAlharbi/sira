@@ -1,5 +1,5 @@
 // src/templates/BasicFree/config.js
-import { baseIntro, baseProjects, baseContact } from '../baseConfig';
+import { baseIntro, baseProjects, baseContact } from '../baseconfig';
 
 export const config = [
   ...baseIntro,
