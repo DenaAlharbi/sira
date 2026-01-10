@@ -56,7 +56,7 @@ const REGISTRY_DATA = {
      component: BasicFree, 
      config: BasicFreeConfig, 
      isPaid: false,
-     coverImage: '/assets/covers/eeee.png',
+     coverImage: '/assets/covers/basicfree.png',
      price: 'Free',
      description: 'A simple and clean portfolio template perfect for beginners.',
      category: 'Essential'
