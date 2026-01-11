@@ -65,7 +65,7 @@ const REGISTRY_DATA = {
      component: ProjectFocus, 
      config: ProjectFocusConfig, 
      isPaid: true,
-     coverImage: 'https://via.placeholder.com/600x2500/ffffff/000000?text=Project+Focus',
+     coverImage: '/assets/covers/projectfocus.png',
      price: '50',
      description: 'A sleek, modern portfolio template designed to highlight your projects effectively.',
      category: 'Creative'

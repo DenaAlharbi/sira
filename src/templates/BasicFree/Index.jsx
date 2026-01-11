@@ -12,22 +12,22 @@ export default function BasicFree({ data }) {
   return (
     <div className="min-h-screen bg-white text-slate-950 font-sans selection:bg-slate-900 selection:text-white">
       
-      {/* MAIN CONTAINER: Centered single column for ALL devices */}
-      {/* px-6 pt-24 ensures mobile notch safety. md:pt-32 gives desktop more breathing room. */}
+      {/* MAIN CONTAINER */}
       <div className="max-w-3xl mx-auto px-6 pt-24 pb-12 md:pt-32 md:pb-20">
         
         {/* === HEADER SECTION === */}
         <header className="mb-20 md:mb-32">
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-black mb-6 md:mb-8">
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-black mb-6 md:mb-8 break-words">
             {fullName}
           </h1>
-          <p className="text-xl md:text-3xl text-slate-500 font-light tracking-wide mb-8 md:mb-12">
+          <p className="text-xl md:text-3xl text-slate-500 font-light tracking-wide mb-8 md:mb-12 break-words">
             {title}
           </p>
           
           <div className="w-24 h-0.5 bg-slate-900 mb-8 md:mb-12"></div>
           
-          <p className="text-lg md:text-2xl text-slate-800 leading-relaxed font-normal max-w-2xl">
+          {/* FIX: Added 'w-full', 'break-words', and 'whitespace-pre-wrap' */}
+          <p className="text-lg md:text-2xl text-slate-800 leading-relaxed font-normal max-w-2xl w-full break-words whitespace-pre-wrap">
             {bio}
           </p>
         </header>
@@ -46,20 +46,21 @@ export default function BasicFree({ data }) {
                 <div key={index} className="group flex flex-col gap-6 md:gap-8">
                   {/* Title & Arrow */}
                   <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4">
-                     <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 group-hover:text-slate-600 transition-colors">
-                       <a href={project.link || '#'} target="_blank" rel="noreferrer">
-                         {project.title || 'Untitled Project'}
-                       </a>
-                     </h3>
-                     <span className="hidden md:inline-block opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-3xl text-slate-400">
-                       &rarr;
-                     </span>
+                      <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 group-hover:text-slate-600 transition-colors break-words">
+                        <a href={project.link || '#'} target="_blank" rel="noreferrer">
+                          {project.title || 'Untitled Project'}
+                        </a>
+                      </h3>
+                      <span className="hidden md:inline-block opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-3xl text-slate-400">
+                        &rarr;
+                      </span>
                   </div>
 
                   {/* Description & Button */}
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
                     <div className="md:col-span-8">
-                      <p className="text-base md:text-xl text-slate-600 leading-relaxed">
+                      {/* FIX: Added break-words/pre-wrap here too for safety */}
+                      <p className="text-base md:text-xl text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
                         {project.description || 'A succinct description of the project highlighting the key technologies used and the problem solved.'}
                       </p>
                     </div>
@@ -78,7 +79,7 @@ export default function BasicFree({ data }) {
                     </div>
                   </div>
                   
-                  {/* Subtle Separator (visible only on mobile to separate stacked items) */}
+                  {/* Subtle Separator */}
                   <div className="h-px bg-slate-100 w-full mt-8 md:hidden group-last:hidden"></div>
                 </div>
               ))
@@ -111,7 +112,6 @@ export default function BasicFree({ data }) {
                   <span className="text-xs font-bold uppercase tracking-widest opacity-60">
                     {item.platform}
                   </span>
-                  {/* SVG Arrow Icon */}
                   <span className="text-slate-400 group-hover:text-white transition-colors">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="7" y1="17" x2="17" y2="7" />
@@ -119,7 +119,8 @@ export default function BasicFree({ data }) {
                     </svg>
                   </span>
                 </div>
-                <div className="text-lg md:text-2xl font-bold truncate">
+                {/* FIX: Ensure long emails/urls break properly */}
+                <div className="text-lg md:text-2xl font-bold truncate break-all">
                   {item.value}
                 </div>
               </a>

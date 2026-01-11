@@ -33,10 +33,7 @@ export default function Gallery({ onSelect, selectedTemplateId }) {
                     {template.title}
                   </h3>
                </div>
-               {/* Optional: Show Price Tag or 'Free' text */}
-               <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${template.isPaid ? 'bg-slate-100 text-slate-500' : 'bg-green-50 text-green-600'}`}>
-                 {template.isPaid ? '$50' : 'Free'}
-               </span>
+              
             </div>
             
             <p className="text-xs text-slate-400 leading-snug line-clamp-2 mt-1">
