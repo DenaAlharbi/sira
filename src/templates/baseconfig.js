@@ -46,12 +46,13 @@ export const baseProjects = (limit = 50) => [
   {
     id: 'projects',
     key: 'projects', // MASTER KEY
-    label: `Add Projects (Max ${limit})`,
+    label: `Add Projects`,
     type: 'repeater',
+    required: true,
     min: 1,
     max: limit, // <--- Variable Limit
     inputs: [
-      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'title', label: 'Title', type: 'text',required: true },
       { key: 'link', label: 'Link', type: 'text' },
       { key: 'description', label: 'Description', type: 'textarea' },
     ],
@@ -65,16 +66,39 @@ export const baseContact = (limit = 10) => [
     type: 'section',
     label: 'Contact Info',
   },
-  {
+ {
     id: 'contact',
-    key: 'contact', // MASTER KEY
-    label: `Contact Links (Max ${limit})`,
+    key: 'contact',
+    label: `Contact Links`,
     type: 'repeater',
+    required: true,
     min: 1,
-    max: limit, // <--- Variable Limit
+    max: limit,
     inputs: [
-      { key: 'platform', label: 'Platform', type: 'text', placeholder: 'e.g. Email' },
-      { key: 'value', label: 'Link/Email', type: 'text', placeholder: 'e.g. hello@alex.dev' },
+      { 
+        key: 'platform', 
+        label: 'Platform', 
+        type: 'select', // <--- CHANGED TO SELECT
+        options: [
+          'Email', 
+          'Phone', 
+          'LinkedIn', 
+          'GitHub', 
+          'Twitter / X', 
+          'Website', 
+          'Instagram', 
+          'Behance'
+        ],
+        placeholder: 'Select Platform',
+        required: true
+      },
+      { 
+        key: 'value', 
+        label: 'Link / Email / Number', 
+        type: 'text', 
+        placeholder: 'e.g. hello@alex.dev',
+        required: true
+      },
     ],
   },
 ];

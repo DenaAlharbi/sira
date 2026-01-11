@@ -84,11 +84,7 @@ export default function QuestionStep({ templateId, form, updateForm, onNext, onE
                 </h2>
               </div>
               
-              {currentQuestion.sub && (
-                <p className="text-slate-400 text-xs md:text-base font-light leading-snug md:leading-relaxed max-w-md">
-                  {currentQuestion.sub}
-                </p>
-              )}
+             
             </div>
             
             {/* INPUT RENDERER */}
