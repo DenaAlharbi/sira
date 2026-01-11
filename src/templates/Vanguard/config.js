@@ -1,70 +1,35 @@
-export const config = [
-    {
-      id: 'intro',
-      type: 'section',
-      label: 'System Identity', // Techy naming
-    },
-    {
-      id: 'fullName',
-      key: 'fullName',
-      type: 'text',
-       label: 'Full Name',
-      placeholder: 'Your Name',
-      required: true,
-    },
-    {
-      id: 'title',
-      key: 'title',
-      type: 'text',
-      label: 'Role / Specialization',
-      placeholder: 'e.g. Full Stack Architect',
-    },
-    {
-      id: 'bio',
-      key: 'bio',
-      type: 'textarea',
-      label: 'About Me',
-      placeholder: 'Tell us a bit about yourself...',
-      minLength: 30,
-    },
-    {
-      id: 'projectsSection',
-      type: 'section',
-      label: 'Deployments',
-    },
-    {
-      id: 'projects',
-      key: 'projects',
-      type: 'repeater',
-      label: 'Project Section',
-      min: 1, // Minimum 1 required
-      fields: [
-        { key: 'name', label: 'Project Name', placeholder: 'e.g. Nexus API', required: true },
-        { key: 'image', label: 'Cover Image URL', placeholder: 'Upload an image', type: 'image',helper: 'Recommended: 1600x900px JPG or PNG' }, // NEW IMAGE FIELD
-        { key: 'desc', label: 'Tech Stack / Desc', placeholder: 'React, Node, AI...', type: 'textarea' },
-        { key: 'link', label: 'Live Link', placeholder: 'https://...', type: 'text' }
-      ]
-    },
-    {
-      id: 'contactSection',
-      type: 'section',
-      label: 'Contact Section',
-    },
-    {
-      id: 'contact',
-      key: 'contact',
-      type: 'repeater',
-      label: 'Communication Channels',
-      min: 1, // Minimum 1 required
-      fields: [
+import { baseIntro, baseProjects, baseContact } from '../baseconfig';
+
+// 1. Get standard projects
+const standardProjects = baseProjects();
+
+// 2. Modify to add the 'image' field specifically for Vanguard
+const vanguardProjects = standardProjects.map(item => {
+  if (item.key === 'projects') {
+    return {
+      ...item,
+      inputs: [
+        // Keep Title
+        item.inputs[0], 
+        
+        // INSERT: The Smart Image Field
         { 
-          key: 'type', 
-          label: 'Protocol', 
-          type: 'select', 
-          options: ['Email', 'GitHub', 'LinkedIn', 'Twitter', 'Discord'],
-          required: true 
+          key: 'image', 
+          label: 'Project Visual', 
+          type: 'image', // This will trigger our new component
+          helper: 'Upload a file OR paste a direct image link (JPG/PNG). Recommended 16:9.' 
         },
-        { key: 'value', label: 'Address', placeholder: 'user@network.com', required: true }
+
+        // Keep Description & Link
+        ...item.inputs.slice(1) 
       ]
-    }
-  ];
+    };
+  }
+  return item;
+});
+
+export const config = [
+  ...baseIntro,
+  ...vanguardProjects,
+  ...baseContact()
+];

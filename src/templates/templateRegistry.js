@@ -74,7 +74,7 @@ const REGISTRY_DATA = {
      component: Vanguard, 
      config: VanguardConfig, 
      isPaid: true,
-     coverImage: 'https://via.placeholder.com/600x2500/000000/ffffff?text=Vanguard',
+     coverImage: '/assets/covers/vanguard.png',
      price: '50',
      description: 'A bold and dynamic portfolio template for creative professionals.', 
      category: 'Creative'
