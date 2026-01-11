@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import { FREE_TEMPLATES, getTemplateQuestions } from '../templates/templateRegistry';
-import { generateUniqueSlug } from '../utils/slugGenerator'; // <--- IMPORT THIS
+import { generateUniqueSlug } from '../utils/SlugGenerator'; // <--- IMPORT THIS
 
 // --- COMPONENT IMPORTS ---
 import Header from '../components/Header';
