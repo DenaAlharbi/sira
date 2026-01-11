@@ -38,7 +38,8 @@ export default function Vanguard({ data, isMobilePreview = false }) {
       <style>{styles}</style>
       
       {/* BACKGROUND FX */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+      {/* FIX: Changed 'fixed' to 'absolute' so it stays inside the preview box */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         {/* CRT Scanline Overlay */}
         <div className="absolute inset-0 bg-scanlines opacity-10 pointer-events-none z-20"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/90 z-10"></div>

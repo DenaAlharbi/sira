@@ -1,5 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// Import Legal Pages
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
 
 // Import Pages
 import EditorPage from './pages/EditorPage';
@@ -14,6 +17,8 @@ export default function App() {
         
         {/* Route 2: The Live Profile (e.g. /alex) */}
         <Route path="/:username" element={<PublicProfile />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/terms-and-conditions" element={<TermsConditions />} />
       </Routes>
     </BrowserRouter>
   );
