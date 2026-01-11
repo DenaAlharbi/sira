@@ -28,17 +28,17 @@ export default function Footer() {
         </div>
 
         {/* CREDITS & LEGAL COLUMN */}
-        <div className="space-y-3 md:space-y-4 text-center md:text-left">
+        <div className="space-y-3 md:space-y-4 text-left md:text-left">
           <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900">Credits</h4>
           <p className="text-sm text-slate-500 leading-relaxed">
-            Designed & Developed by <span className="text-slate-900 font-medium">Dena Alharbi</span>
+            Designed & Developed by <span className="text-slate-900 font-medium">Dena</span>
           </p>
           
           {/* UPDATED LINKS SECTION */}
-          <div className="flex flex-col md:items-end gap-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-300">
+          <div className="left md:items-end gap-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-300">
             <Link to="/privacy-policy" className="hover:text-slate-900 transition-colors">
               Privacy Policy
-            </Link>
+            </Link><br/>
             <Link to="/terms-and-conditions" className="hover:text-slate-900 transition-colors">
               Terms and Conditions
             </Link>
