@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import { FREE_TEMPLATES, getTemplateQuestions } from '../templates/templateRegistry';
+import { generateUniqueSlug } from '../utils/slugGenerator'; // <--- IMPORT THIS
 
 // --- COMPONENT IMPORTS ---
 import Header from '../components/Header';
@@ -51,6 +52,7 @@ export default function EditorPage() {
        localStorage.removeItem('sira_template_backup');
        localStorage.removeItem('sira_edit_mode');
        localStorage.removeItem('sira_existing_id');
+       localStorage.removeItem('sira_email_backup');
        setSelectedTemplate('BasicFree'); 
     }
   }, []);
@@ -65,6 +67,7 @@ export default function EditorPage() {
       const savedTemplate = localStorage.getItem('sira_template_backup');
       const savedEditMode = localStorage.getItem('sira_edit_mode') === 'true'; 
       const savedId = localStorage.getItem('sira_existing_id'); 
+      const savedEmail = localStorage.getItem('sira_email_backup');
       
       if (savedForm && savedTemplate) {
         const parsedForm = JSON.parse(savedForm);
@@ -72,8 +75,8 @@ export default function EditorPage() {
         setSelectedTemplate(savedTemplate);
 
         const finalizeDeployment = async () => {
-          const baseName = (parsedForm.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-');
-          const safeUsername = `${baseName}-${Date.now()}`;
+          // --- SMART SLUG GENERATION ---
+          const safeUsername = await generateUniqueSlug(parsedForm.fullName, parsedForm.title);
           setDeployedUsername(safeUsername);
 
           try {
@@ -97,7 +100,7 @@ export default function EditorPage() {
                   full_name: parsedForm.fullName,
                   template_id: savedTemplate,
                   data: parsedForm,
-                  owner_email: localStorage.getItem('sira_email_backup') 
+                  owner_email: savedEmail 
                 }]);
                error = result.error;
             }
@@ -123,16 +126,20 @@ export default function EditorPage() {
 
   // --- CORE DEPLOYMENT FUNCTION ---
   const handleDeployToSupabase = async (ownerEmail) => {
-    const baseName = (form.fullName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '-');
-    const safeUsername = `${baseName}-${Date.now()}`;
-    
-    setDeployedUsername(safeUsername);
-
     try {
       let error;
 
       if (isEditMode && existingId) {
-        // --- UPDATE EXISTING ---
+        // --- UPDATE EXISTING (Keep existing username) ---
+        // Fetch current username to show in modal
+        const { data: currentData } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', existingId)
+          .single();
+          
+        if (currentData) setDeployedUsername(currentData.username);
+
         const result = await supabase
           .from('profiles')
           .update({ 
@@ -143,7 +150,10 @@ export default function EditorPage() {
           .eq('id', existingId);
         error = result.error;
       } else {
-        // --- CREATE NEW ---
+        // --- CREATE NEW (Generate Smart Slug) ---
+        const safeUsername = await generateUniqueSlug(form.fullName, form.title);
+        setDeployedUsername(safeUsername);
+
         const result = await supabase
           .from('profiles')
           .insert([{ 
@@ -322,7 +332,7 @@ export default function EditorPage() {
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
               className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" 
-              onClick={handleCloseEditor} // <--- UPDATED: Soft Close
+              onClick={handleCloseEditor} // Soft Close
             >
               <motion.div 
                 initial={{ scale: 0.95, opacity: 0, y: 20 }} 
@@ -330,7 +340,7 @@ export default function EditorPage() {
                 onClick={(e) => e.stopPropagation()} 
                 className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-y-auto flex flex-col max-h-[85vh] md:max-h-[90vh]"
               >
-                {/* Close Button: UPDATED to Soft Close */}
+                {/* Close Button: Soft Close */}
                 <button 
                   onClick={handleCloseEditor} 
                   className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10"
@@ -343,8 +353,8 @@ export default function EditorPage() {
                   form={form} 
                   updateForm={updateForm} 
                   onNext={() => setView('preview')} 
-                  onBack={() => setView('gallery')} // This is internal nav
-                  onExit={handleCloseEditor} // <--- UPDATED: Soft Close
+                  onBack={() => setView('gallery')} 
+                  onExit={handleCloseEditor} 
                 />
               </motion.div>
             </motion.div>
