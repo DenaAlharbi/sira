@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
-import { FREE_TEMPLATES } from '../templates/templateRegistry';
+import { FREE_TEMPLATES, getTemplateQuestions } from '../templates/templateRegistry';
 
 // --- COMPONENT IMPORTS ---
 import Header from '../components/Header';
@@ -14,7 +14,7 @@ import PaymentModal from '../components/PaymentModal';
 import DeploymentModal from '../components/DeploymentModal';
 import AuthModal from '../components/AuthModal';
 import DashboardModal from '../components/DashboardModal';
-import ClaimModal from '../components/ClaimModal'; // Imported, so we deleted the local function
+import ClaimModal from '../components/ClaimModal'; 
 
 export default function EditorPage() {
   // --- STATE ---
@@ -167,18 +167,48 @@ export default function EditorPage() {
   // --- ACTIONS ---
   const updateForm = (data) => setForm((prev) => ({ ...prev, ...data }));
 
+  // --- TEMPLATE SWITCHER (Merges State) ---
+  const handleTemplateSelect = (newTemplateId) => {
+    setSelectedTemplate(newTemplateId);
+    setView('questions');
+
+    setForm(prevForm => {
+      const newQuestions = getTemplateQuestions(newTemplateId);
+      const newDefaults = {};
+
+      newQuestions.forEach(q => {
+        if (prevForm[q.key] === undefined) {
+           newDefaults[q.key] = q.type === 'repeater' ? [] : '';
+        }
+      });
+
+      // MERGE: Keep prevForm data!
+      return { ...newDefaults, ...prevForm };
+    });
+  };
+
+  // --- NAVIGATION HANDLERS ---
+  
+  // 1. Hard Reset (Actual "Home" button)
   const handleHomeClick = () => {
     setView('gallery');
     setShowOnboarding(false);
     setIsEditMode(false); 
     setExistingId(null); 
-    setForm({ fullName: '', title: '', bio: '', experience: [], contact: [] }); 
+    setForm({ fullName: '', title: '', bio: '', projects: [], contact: [] }); 
     setSelectedTemplate('BasicFree');
     
     localStorage.removeItem('sira_form_backup');
     localStorage.removeItem('sira_template_backup');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 2. Soft Close (The "X" button or Back from Questions) - PRESERVES DATA
+  const handleCloseEditor = () => {
+    setView('gallery'); 
+    // Do NOT reset form here. This allows the user to pick a new template 
+    // and have their data merge into it.
   };
 
   const handleCheckoutStart = async () => {
@@ -268,7 +298,12 @@ export default function EditorPage() {
                   Designed for the Kingdom's next generation of leaders.
                 </p>
               </div>
-              <Gallery onSelect={(id) => { setSelectedTemplate(id); setView('questions'); }} />
+              
+              <Gallery 
+                onSelect={handleTemplateSelect} 
+                selectedTemplateId={selectedTemplate} 
+              />
+              
             </motion.div>
           )}
 
@@ -281,10 +316,36 @@ export default function EditorPage() {
           )}
 
           {view === 'questions' && (
-            <motion.div key="questions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" onClick={handleHomeClick}>
-              <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-y-auto flex flex-col max-h-[85vh] md:max-h-[90vh]">
-                <button onClick={handleHomeClick} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10">✕</button>
-                <QuestionStep templateId={selectedTemplate} form={form} updateForm={updateForm} onNext={() => setView('preview')} onBack={() => setView('gallery')} onExit={handleHomeClick} />
+            <motion.div 
+              key="questions" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" 
+              onClick={handleCloseEditor} // <--- UPDATED: Soft Close
+            >
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0, y: 20 }} 
+                animate={{ scale: 1, opacity: 1, y: 0 }} 
+                onClick={(e) => e.stopPropagation()} 
+                className="bg-white p-6 md:p-12 rounded-2xl md:rounded-3xl w-full max-w-lg md:max-w-2xl shadow-2xl relative overflow-y-auto flex flex-col max-h-[85vh] md:max-h-[90vh]"
+              >
+                {/* Close Button: UPDATED to Soft Close */}
+                <button 
+                  onClick={handleCloseEditor} 
+                  className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-slate-300 hover:text-slate-900 transition-colors z-10"
+                >
+                  ✕
+                </button>
+                
+                <QuestionStep 
+                  templateId={selectedTemplate} 
+                  form={form} 
+                  updateForm={updateForm} 
+                  onNext={() => setView('preview')} 
+                  onBack={() => setView('gallery')} // This is internal nav
+                  onExit={handleCloseEditor} // <--- UPDATED: Soft Close
+                />
               </motion.div>
             </motion.div>
           )}
